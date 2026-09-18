@@ -1,9 +1,89 @@
 @import 'tailwindcss';
 
+@source '../views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+    --nivora-primary: #687EFF;
+    --nivora-primary-strong: #1F2544;
+    --nivora-secondary: #98E4FF;
+    --nivora-accent: #B6FFFA;
+    --nivora-surface: #F5FBFF;
+    --nivora-base: #EAF6FF;
+    --nivora-dark-surface: #2D3250;
+    --nivora-dark-base: #1F2544;
+    --nivora-border: rgba(31, 37, 68, 0.12);
+    --nivora-text: #1f2544;
+    --nivora-muted: #5e647f;
+    --nivora-soft: #eef6ff;
+    --nivora-card: rgba(255, 255, 255, 0.92);
+    --nivora-card-muted: #f7f9ff;
+    --nivora-shadow: 0 18px 50px rgba(31, 37, 68, 0.07);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--nivora-text);
+    background: #f3f7ff;
+    overflow-x: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+::selection {
+    background: rgba(104, 126, 255, 0.18);
+}
+
+@layer utilities {
+    .ni-page {
+        @apply min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(152,228,255,0.22),_transparent_26%),linear-gradient(180deg,_#f8faff_0%,_#eef4ff_100%)];
+    }
+
+    .ni-shell {
+        @apply mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8;
+    }
+
+    .soft-card {
+        @apply rounded-[26px] border border-[#e7ebff] bg-white/90 shadow-[0_18px_46px_rgba(31,37,68,0.06)] backdrop-blur-sm;
+    }
+
+    .ni-badge {
+        @apply inline-flex items-center rounded-full border border-[#dfe6ff] bg-[#eef3ff] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1f2544];
+    }
+
+    .ni-chip {
+        @apply inline-flex items-center gap-2 rounded-full border border-[#e7ebff] bg-[#f7f9ff] px-2.5 py-1.5 text-xs font-medium text-[#4f5879] shadow-sm;
+    }
+
+    .ni-panel {
+        @apply rounded-[28px] border border-[#e7ebff] bg-white/90 shadow-[0_22px_52px_rgba(31,37,68,0.05)];
+    }
+
+    .ni-section-label {
+        @apply text-[10px] font-semibold uppercase tracking-[0.22em] text-[#687EFF];
+    }
 }
