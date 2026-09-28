@@ -19,23 +19,17 @@
     @endphp
 
     <div class="space-y-6">
-        <div class="flex flex-col gap-4 rounded-[30px] border border-[#e7ebff] bg-gradient-to-r from-[#687EFF] to-[#98E4FF] p-5 text-white shadow-sm sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Cashier</p>
-                <h1 class="mt-2 text-2xl font-semibold tracking-[-0.05em]">Selamat datang, Ayu R.</h1>
-            </div>
-            <div class="flex flex-wrap items-center gap-3 text-sm">
-                <div class="rounded-2xl bg-white/10 px-3 py-2">Outlet aktif: Bandung Center</div>
-                <div class="rounded-2xl bg-white/10 px-3 py-2">{{ now()->translatedFormat('d M Y') }}</div>
-                <a href="{{ route('home') }}" class="rounded-2xl bg-white px-3 py-2 font-medium text-[#1f2544]">Logout</a>
-            </div>
-        </div>
+        <x-page-header eyebrow="CASHIER" title="Dashboard kasir" description="Kelola transaksi dan pantau aktivitas penjualan toko dengan mudah.">
+            <span class="rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm text-[#5e647f]">Outlet aktif: Bandung Center</span>
+            <span class="rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm text-[#5e647f]">{{ now()->translatedFormat('d M Y') }}</span>
+            <x-button href="{{ route('home') }}" type="primary">Logout</x-button>
+        </x-page-header>
 
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             @foreach ($stats as $stat)
-                <div class="rounded-[26px] border border-[#e7ebff] bg-white p-5 shadow-sm">
+                <div class="ni-stat-card">
                     <p class="text-sm text-[#5e647f]">{{ $stat['label'] }}</p>
-                    <p class="mt-4 text-2xl font-semibold tracking-[-0.05em] text-[#1f2544]">{{ $stat['value'] }}</p>
+                    <p class="mt-4 text-2xl font-semibold tracking-tighter text-[#1f2544]">{{ $stat['value'] }}</p>
                     <p class="mt-2 text-xs text-[#687EFF]">{{ $stat['detail'] }}</p>
                 </div>
             @endforeach

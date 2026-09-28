@@ -81,7 +81,7 @@
 
         <div class="space-y-4">
             @foreach ($modules as $module)
-                <a href="{{ route('dashboard') }}" class="group block rounded-[26px] border border-[#e7ebff] bg-[linear-gradient(180deg,_#eef3ff_0%,_#f7f9ff_100%)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                <a href="{{ route('owner.dashboard') }}" class="group block rounded-[26px] border border-[#e7ebff] bg-[linear-gradient(180deg,_#eef3ff_0%,_#f7f9ff_100%)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
                             <div class="text-[11px] font-medium uppercase tracking-[0.2em] text-[#687EFF]">{{ $module['index'] }}</div>

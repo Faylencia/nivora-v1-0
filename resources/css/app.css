@@ -4,6 +4,17 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+nav.scrollbar-hidden {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+}
+
+nav.scrollbar-hidden::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
 @theme {
     --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
@@ -60,15 +71,19 @@ textarea {
 
 @layer utilities {
     .ni-page {
-        @apply min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(152,228,255,0.22),_transparent_26%),linear-gradient(180deg,_#f8faff_0%,_#eef4ff_100%)];
+        @apply min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(152,228,255,0.22),transparent_26%),linear-gradient(180deg,#f8faff_0%,#eef4ff_100%)];
     }
 
     .ni-shell {
-        @apply mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8;
+        @apply mx-auto w-full max-w-360 px-4 sm:px-6 lg:px-8;
     }
 
     .soft-card {
         @apply rounded-[26px] border border-[#e7ebff] bg-white/90 shadow-[0_18px_46px_rgba(31,37,68,0.06)] backdrop-blur-sm;
+    }
+
+    .ni-stat-card {
+        @apply rounded-[26px] border border-[#e7ebff] bg-white/90 p-5 shadow-[0_18px_40px_rgba(31,37,68,0.04)];
     }
 
     .ni-badge {
@@ -80,7 +95,27 @@ textarea {
     }
 
     .ni-panel {
-        @apply rounded-[28px] border border-[#e7ebff] bg-white/90 shadow-[0_22px_52px_rgba(31,37,68,0.05)];
+        @apply rounded-[28px] border border-[#e7ebff] bg-white/90 shadow-[0_18px_40px_rgba(31,37,68,0.04)];
+    }
+
+    .ni-table {
+        @apply min-w-full text-left text-sm text-[#5e647f];
+    }
+
+    .ni-table thead tr {
+        @apply border-b border-[#e7ebff];
+    }
+
+    .ni-table th {
+        @apply px-4 py-3 text-xs font-semibold text-[#1f2544];
+    }
+
+    .ni-table tbody tr {
+        @apply border-b border-[#eef3ff] transition-colors hover:bg-[#f7f9ff];
+    }
+
+    .ni-table td {
+        @apply px-4 py-3 align-middle;
     }
 
     .ni-section-label {

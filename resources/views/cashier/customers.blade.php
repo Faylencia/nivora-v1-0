@@ -5,19 +5,14 @@
 @section('content')
     @php
         $customers = [
-            ['name' => 'Budi', 'phone' => '0812-3456-7890', 'points' => 120],
-            ['name' => 'Sinta', 'phone' => '0812-1111-2222', 'points' => 240],
-            ['name' => 'Rafi', 'phone' => '0812-3333-4444', 'points' => 80],
+            ['name' => 'Budi', 'phone' => '0812-3456-7890', 'membership' => 'Gold', 'points' => 120],
+            ['name' => 'Sinta', 'phone' => '0812-1111-2222', 'membership' => 'Silver', 'points' => 240],
+            ['name' => 'Rafi', 'phone' => '0812-3333-4444', 'membership' => 'Regular', 'points' => 80],
         ];
     @endphp
 
     <div class="space-y-6">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#687EFF]">Customer</p>
-                <h1 class="mt-2 text-3xl font-semibold tracking-[-0.05em] text-[#1f2544]">Customer</h1>
-            </div>
-        </div>
+        <x-page-header eyebrow="CASHIER / CUSTOMER" title="Customer" description="Kelola informasi pelanggan yang melakukan transaksi." />
 
         <div class="rounded-[28px] border border-[#e7ebff] bg-white p-5 shadow-sm">
             <div class="mb-5 max-w-md rounded-xl border border-[#e7ebff] bg-[#f7f9ff] px-3 py-2">
@@ -35,8 +30,8 @@
                             </div>
                         </div>
                         <div class="mt-4 flex items-center justify-between text-sm text-[#5e647f]">
-                            <span>Points</span>
-                            <span class="font-semibold text-[#1f2544]">{{ $customer['points'] }}</span>
+                            <span class="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">{{ $customer['membership'] }}</span>
+                            <span class="font-semibold text-[#1f2544]">{{ number_format($customer['points']) }} Points</span>
                         </div>
                     </div>
                 @endforeach

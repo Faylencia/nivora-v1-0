@@ -13,13 +13,9 @@
     @endphp
 
     <div class="space-y-6">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#687EFF]">Produk</p>
-                <h1 class="mt-2 text-3xl font-semibold tracking-[-0.05em] text-[#1f2544]">Daftar Produk</h1>
-            </div>
-            <a href="{{ route('cashier.pos') }}" class="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#687EFF] px-4 py-2.5 text-sm font-medium text-white">Mulai Transaksi</a>
-        </div>
+        <x-page-header eyebrow="CASHIER / PRODUK" title="Produk" description="Lihat produk yang tersedia untuk transaksi di outlet Anda.">
+            <x-button href="{{ route('cashier.pos') }}" type="primary">Mulai Transaksi</x-button>
+        </x-page-header>
 
         <div class="rounded-[28px] border border-[#e7ebff] bg-white p-5 shadow-sm">
             <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

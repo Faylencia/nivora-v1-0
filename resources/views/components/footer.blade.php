@@ -3,7 +3,7 @@
         <div class="grid gap-8 md:grid-cols-4">
             <div class="md:col-span-2">
                 <div class="mb-4 flex items-center gap-3">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#687EFF] to-[#98E4FF] text-lg font-bold text-white shadow-sm">N</div>
+                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-[#687EFF] to-[#98E4FF] text-lg font-bold text-white shadow-sm">N</div>
                     <div>
                         <div class="text-xl font-semibold tracking-[-0.04em] text-[#1f2544]">NIVORA</div>
                     </div>
@@ -27,7 +27,7 @@
                 <ul class="space-y-3 text-sm text-[#5e647f]">
                     <li><a href="{{ route('login') }}" class="hover:text-[#1f2544]">Login</a></li>
                     <li><a href="{{ route('register') }}" class="hover:text-[#1f2544]">Register</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-[#1f2544]">Dashboard</a></li>
+                    <li><a href="{{ route('owner.dashboard') }}" class="hover:text-[#1f2544]">Dashboard</a></li>
                 </ul>
             </div>
         </div>

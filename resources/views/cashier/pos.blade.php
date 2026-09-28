@@ -15,18 +15,17 @@
             ['name' => 'Kopi Susu Signature', 'price' => 18000, 'qty' => 2, 'subtotal' => 36000],
             ['name' => 'Croissant Matcha', 'price' => 26000, 'qty' => 1, 'subtotal' => 26000],
         ];
+
+        $customers = [
+            ['name' => 'Ahmad Rifai', 'phone' => '0812-3456-7890', 'membership' => 'Gold', 'points' => 1250],
+            ['name' => 'Nadia Putri', 'phone' => '0812-1234-5678', 'membership' => 'Silver', 'points' => 840],
+        ];
     @endphp
 
     <div class="space-y-6">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#687EFF]">POS</p>
-                <h1 class="mt-2 text-3xl font-semibold tracking-[-0.05em] text-[#1f2544]">Cashier POS</h1>
-            </div>
-            <div class="rounded-2xl border border-[#e7ebff] bg-white px-3 py-2 text-sm text-[#5e647f] shadow-sm">
-                Outlet: Bandung Center
-            </div>
-        </div>
+        <x-page-header eyebrow="CASHIER / TRANSAKSI" title="Transaksi baru" description="Pilih produk dan proses pembayaran pelanggan di outlet aktif.">
+            <span class="rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm text-[#5e647f]">Outlet: Bandung Center</span>
+        </x-page-header>
 
         <div class="grid gap-6 xl:grid-cols-[1.4fr_0.6fr]">
             <div class="space-y-5">
@@ -94,6 +93,27 @@
                     <div class="flex items-center justify-between"><span>Discount</span><span class="font-medium text-[#1f2544]">Rp 0</span></div>
                     <div class="flex items-center justify-between"><span>Tax</span><span class="font-medium text-[#1f2544]">Rp 0</span></div>
                     <div class="flex items-center justify-between pt-2 text-base font-semibold text-[#1f2544]"><span>Total</span><span>Rp 62.000</span></div>
+                </div>
+
+                <div class="mt-5 rounded-[20px] border border-[#e7ebff] bg-[#f7f9ff] p-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[#687EFF]">Customer</p>
+                            <p class="mt-1 text-sm text-[#5e647f]">Pilih customer untuk menyimpan membership dan points.</p>
+                        </div>
+                        <button type="button" class="text-xs font-semibold text-[#687EFF]">+ Customer Baru</button>
+                    </div>
+                    <select class="mt-3 min-h-[46px] w-full rounded-2xl border border-[#e7ebff] bg-white px-3 text-sm text-[#1f2544] outline-none focus:border-[#687EFF]">
+                        <option value="">Tanpa customer</option>
+                        @foreach ($customers as $customer)
+                            <option value="{{ $customer['phone'] }}">{{ $customer['name'] }} - {{ $customer['phone'] }}</option>
+                        @endforeach
+                    </select>
+                    <div class="mt-3 rounded-2xl border border-[#dfe7ff] bg-[#eef3ff] p-3 text-sm">
+                        <p class="font-semibold text-[#1f2544]">Ahmad Rifai</p>
+                        <p class="mt-1 text-xs text-[#5e647f]">0812-3456-7890</p>
+                        <div class="mt-2 flex flex-wrap gap-2"><span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-medium text-amber-700">Gold</span><span class="rounded-full bg-white px-2.5 py-1 text-[10px] font-medium text-[#5e647f]">1.250 Points</span></div>
+                    </div>
                 </div>
 
                 <div class="mt-5 rounded-[20px] border border-[#e7ebff] bg-[#f7f9ff] p-3">

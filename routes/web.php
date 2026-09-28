@@ -30,77 +30,121 @@ Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->name('password.request');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+Route::prefix('owner')->name('owner.')->group(function () {
+    Route::get('/', function () {
+        return view('owner.index');
+    })->name('dashboard');
 
-Route::get('/dashboard/business', function () {
-    return view('dashboard.business.index');
-})->name('business.index');
+    Route::get('/business', function () {
+        return view('owner.business.index');
+    })->name('business.index');
 
-Route::get('/dashboard/outlets', function () {
-    return view('dashboard.outlets.index');
-})->name('outlets.index');
+    Route::get('/outlets', function () {
+        return view('owner.outlets.index');
+    })->name('outlets.index');
 
-Route::get('/dashboard/outlets/create', function () {
-    return view('dashboard.outlets.create');
-})->name('outlets.create');
+    Route::get('/outlets/{outlet}/edit', function ($outlet) {
+        return view('owner.outlets.edit', ['outlet' => $outlet]);
+    })->name('outlets.edit');
 
-Route::get('/dashboard/outlets/{outlet}/edit', function ($outlet) {
-    return view('dashboard.outlets.edit', ['outlet' => $outlet]);
-})->name('outlets.edit');
+    Route::get('/products/create', function () {
+        return view('owner.products.create');
+    })->name('products.create');
 
-Route::get('/dashboard/categories/create', function () {
-    return view('dashboard.categories.create');
-})->name('categories.create');
+    Route::get('/products/{product}/edit', function ($product) {
+        return view('owner.products.edit', ['product' => $product]);
+    })->name('products.edit');
 
-Route::get('/dashboard/categories/{category}/edit', function ($category) {
-    return view('dashboard.categories.edit', ['category' => $category]);
-})->name('categories.edit');
+    Route::get('/products/{product}', function ($product) {
+        return view('owner.products.show', ['product' => $product]);
+    })->name('products.show');
 
-Route::get('/dashboard/categories', function () {
-    return view('dashboard.categories.index');
-})->name('categories.index');
+    Route::get('/products', function () {
+        return view('owner.products.index');
+    })->name('products.index');
 
-Route::get('/dashboard/products/create', function () {
-    return view('dashboard.products.create');
-})->name('products.create');
+    Route::get('/inventory', function () {
+        return view('owner.inventory.index');
+    })->name('inventory.index');
 
-Route::get('/dashboard/products/{product}/edit', function ($product) {
-    return view('dashboard.products.edit', ['product' => $product]);
-})->name('products.edit');
+    Route::get('/customers', function () {
+        return view('owner.customers.index');
+    })->name('customers.index');
 
-Route::get('/dashboard/products/{product}', function ($product) {
-    return view('dashboard.products.show', ['product' => $product]);
-})->name('products.show');
+    Route::get('/sales', function () {
+        return view('owner.sales.index');
+    })->name('sales.index');
 
-Route::get('/dashboard/products', function () {
-    return view('dashboard.products.index');
-})->name('products.index');
+    Route::get('/payments', function () {
+        return view('owner.payments.index');
+    })->name('payments.index');
 
-Route::get('/dashboard/inventory', function () {
-    return view('dashboard.inventory.index');
-})->name('inventory.index');
+    Route::get('/ai', function () {
+        return view('owner.ai.index');
+    })->name('ai.index');
 
-Route::get('/dashboard/customers', function () {
-    return view('dashboard.customers.index');
-})->name('customers.index');
+    Route::get('/ai/store-analysis', function () {
+        return view('owner.ai.store-analysis');
+    })->name('ai.store-analysis');
+});
 
-Route::get('/dashboard/sales', function () {
-    return view('dashboard.sales.index');
-})->name('sales.index');
+Route::get('/super-admin', function () {
+    return view('super-admin.dashboard');
+})->name('super-admin.dashboard');
 
-Route::get('/dashboard/payments', function () {
-    return view('dashboard.payments.index');
-})->name('payments.index');
+Route::prefix('/super-admin/categories')->name('super-admin.categories.')->group(function () {
+    Route::get('/', function () {
+        return view('super-admin.categories.index');
+    })->name('index');
 
-Route::get('/dashboard/ai', function () {
-    return view('dashboard.ai.index');
-})->name('ai.index');
+    Route::get('/create', function () {
+        return view('super-admin.categories.create');
+    })->name('create');
 
-Route::get('/dashboard/ai/store-analysis', function () {
-    return view('dashboard.ai.store-analysis');
-})->name('ai.store-analysis');
+    Route::get('/{category}/edit', function ($category) {
+        return view('super-admin.categories.edit', ['category' => $category]);
+    })->name('edit');
+});
+
+Route::get('/super-admin/stores', function () {
+    return view('super-admin.stores');
+})->name('super-admin.stores');
+
+Route::get('/super-admin/store-admins', function () {
+    return view('super-admin.store-admins');
+})->name('super-admin.store-admins');
+
+Route::get('/super-admin/activity', function () {
+    return view('super-admin.activity');
+})->name('super-admin.activity');
+
+Route::get('/super-admin/settings', function () {
+    return view('super-admin.settings');
+})->name('super-admin.settings');
+
+Route::get('/super-admin/stores/create', function () {
+    return view('super-admin.stores.create');
+})->name('super-admin.stores.create');
+
+Route::get('/super-admin/stores/{store}', function ($store) {
+    return view('super-admin.stores.show', ['store' => $store]);
+})->name('super-admin.stores.show');
+
+Route::get('/super-admin/stores/{store}/edit', function ($store) {
+    return view('super-admin.stores.edit', ['store' => $store]);
+})->name('super-admin.stores.edit');
+
+Route::get('/super-admin/store-admins/create', function () {
+    return view('super-admin.store-admins.create');
+})->name('super-admin.store-admins.create');
+
+Route::get('/super-admin/store-admins/{admin}', function ($admin) {
+    return view('super-admin.store-admins.show', ['admin' => $admin]);
+})->name('super-admin.store-admins.show');
+
+Route::get('/super-admin/store-admins/{admin}/edit', function ($admin) {
+    return view('super-admin.store-admins.edit', ['admin' => $admin]);
+})->name('super-admin.store-admins.edit');
 
 Route::get('/cashier', function () {
     return view('cashier.dashboard');
