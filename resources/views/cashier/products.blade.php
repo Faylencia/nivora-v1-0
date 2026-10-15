@@ -1,57 +1,26 @@
 @extends('layouts.cashier')
 
-@section('title', 'Produk Kasir - Nivora')
+@section('title', 'Produk - Nivora')
 
 @section('content')
-    @php
-        $products = [
-            ['name' => 'Kopi Susu Signature', 'category' => 'Minuman', 'price' => 'Rp 18.000', 'stock' => 24, 'status' => 'Available'],
-            ['name' => 'Boba Hazelnut', 'category' => 'Minuman', 'price' => 'Rp 22.000', 'stock' => 12, 'status' => 'Available'],
-            ['name' => 'Croissant Matcha', 'category' => 'Cemilan', 'price' => 'Rp 26.000', 'stock' => 8, 'status' => 'Low Stock'],
-            ['name' => 'Tas Jinjing', 'category' => 'Fashion', 'price' => 'Rp 125.000', 'stock' => 0, 'status' => 'Out of Stock'],
-        ];
-    @endphp
-
-    <div class="space-y-6">
-        <x-page-header eyebrow="CASHIER / PRODUK" title="Produk" description="Lihat produk yang tersedia untuk transaksi di outlet Anda.">
-            <x-button href="{{ route('cashier.pos') }}" type="primary">Mulai Transaksi</x-button>
+    <div class="cashier-products space-y-6" data-live-list="products">
+        <x-page-header eyebrow="CASHIER / PRODUK" title="Katalog produk" description="Lihat harga dan ketersediaan produk pada toko Anda.">
+            <a href="{{ route('cashier.pos') }}" class="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#536dfe] to-[#687eff] px-4 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(83,109,254,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(83,109,254,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/20"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 5h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.5L21 9H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>Buka POS</a>
         </x-page-header>
 
-        <div class="rounded-[28px] border border-[#e7ebff] bg-white p-5 shadow-sm">
-            <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div class="w-full max-w-md rounded-xl border border-[#e7ebff] bg-[#f7f9ff] px-3 py-2">
-                    <input type="text" placeholder="Search produk" class="w-full bg-transparent text-sm text-[#1f2544] outline-none placeholder:text-[#6b7280]" />
-                </div>
-                <select class="rounded-xl border border-[#e7ebff] bg-[#f7f9ff] px-3 py-2.5 text-sm text-[#1f2544] outline-none">
-                    <option>Semua kategori</option>
-                    <option>Minuman</option>
-                    <option>Cemilan</option>
-                    <option>Fashion</option>
-                </select>
-            </div>
+        <section class="cashier-products-hero relative isolate overflow-hidden rounded-[28px] bg-gradient-to-br from-[#20284a] via-[#394a91] to-[#687eff] p-6 text-white shadow-[0_22px_55px_rgba(49,67,130,0.2)] sm:p-8">
+            <div class="pointer-events-none absolute -right-12 -top-24 -z-10 h-72 w-72 rounded-full border-[42px] border-white/[0.08]"></div><div class="pointer-events-none absolute bottom-[-7rem] right-[24%] -z-10 h-56 w-56 rounded-full bg-[#98e4ff]/10 blur-3xl"></div>
+            <div class="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-end"><div class="max-w-2xl"><span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8fffb]"><span class="h-1.5 w-1.5 rounded-full bg-[#8ef1df]"></span>Product catalog</span><h2 class="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Produk toko, siap dilayani.</h2><p class="mt-2 max-w-xl text-sm leading-6 text-white/75">Temukan produk aktif, tinjau harga jual, dan cek ketersediaan stok sebelum memproses transaksi.</p></div><div class="flex w-fit items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-[#b6fffa]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 0v9m8-4.5-8 4.5-8-4.5"/></svg></span><span><span class="block text-xs text-white/70">Produk aktif</span><span data-live-count class="mt-0.5 block text-sm font-semibold">Memuat katalog…</span></span></div></div>
+        </section>
 
-            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                @foreach ($products as $product)
-                    <div class="overflow-hidden rounded-[24px] border border-[#e7ebff] bg-[#f7f9ff] shadow-sm">
-                        <div class="h-32 bg-gradient-to-br from-[#dfe7ff] to-[#98E4FF]"></div>
-                        <div class="p-4">
-                            <p class="font-semibold text-[#1f2544]">{{ $product['name'] }}</p>
-                            <p class="mt-1 text-xs text-[#687EFF]">{{ $product['category'] }}</p>
-                            <p class="mt-3 text-sm font-semibold text-[#1f2544]">{{ $product['price'] }}</p>
-                            <div class="mt-3 flex items-center justify-between gap-3">
-                                <span class="text-xs text-[#5e647f]">Stok: {{ $product['stock'] }}</span>
-                                <span class="inline-flex rounded-full px-2 py-1 text-[10px] font-medium
-                                    @if($product['status'] === 'Available') bg-emerald-50 text-emerald-600
-                                    @elseif($product['status'] === 'Low Stock') bg-amber-50 text-amber-600
-                                    @else bg-rose-50 text-rose-600
-                                    @endif">
-                                    {{ $product['status'] }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
+        <div data-live-message class="hidden rounded-2xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+
+        <section class="cashier-products-panel ni-panel overflow-hidden">
+            <div class="flex flex-col gap-4 border-b border-[#edf0fb] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"><div class="flex items-start gap-3"><span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></span><div><h2 class="text-lg font-semibold tracking-tight text-[#20284a]">Daftar produk</h2><p class="mt-1 text-sm text-[#7b8299]">Cari berdasarkan nama, SKU, atau kategori.</p></div></div><label class="cashier-products-search relative block w-full sm:max-w-sm"><svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a91a9]" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg><input data-live-search type="search" placeholder="Cari nama, SKU, atau kategori" class="min-h-11 w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] py-2 pl-10 pr-3 text-sm outline-none transition focus:border-[#687EFF] focus:ring-4 focus:ring-[#536dfe]/10" /></label></div>
+            <div data-live-loading class="p-12 text-center text-sm text-[#5e647f]"><span class="inline-flex items-center gap-3 rounded-2xl bg-[#f7f9ff] px-4 py-3"><span class="h-2 w-2 animate-pulse rounded-full bg-[#687EFF]"></span>Memuat katalog produk…</span></div>
+            <div data-live-empty class="hidden px-6 py-14 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 0v9m8-4.5-8 4.5-8-4.5"/></svg></span><p class="mt-4 font-semibold text-[#303858]">Produk tidak ditemukan</p><p class="mt-1 text-sm text-[#7b8299]">Coba ubah kata pencarian atau periksa kembali katalog toko.</p></div>
+            <div data-live-table-wrap class="hidden overflow-x-auto"><table class="ni-table cashier-products-table min-w-[900px]"><thead><tr><th>Produk</th><th>SKU</th><th>Kategori</th><th>Harga jual</th><th>Stok toko</th><th>Status</th><th>Aksi</th></tr></thead><tbody data-live-table></tbody></table></div>
+            <div class="cashier-products-footnote flex items-center gap-2 border-t border-[#edf0fb] bg-[#fcfcff] px-5 py-3.5 text-xs text-[#7b8299] sm:px-6"><svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0 text-[#687eff]" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>Informasi harga dan stok diperbarui dari data operasional toko.</div>
+        </section>
     </div>
 @endsection

@@ -14,9 +14,10 @@
             'navigationLabel' => 'Navigasi Super Admin',
             'menus' => [
                 ['label' => 'Dashboard', 'icon' => 'home', 'href' => route('super-admin.dashboard'), 'active' => 'super-admin.dashboard'],
+                ['label' => 'Pengajuan Toko', 'icon' => 'briefcase', 'href' => route('super-admin.business-applications'), 'active' => 'super-admin.business-applications'],
+                ['label' => 'Akun Member & Owner', 'icon' => 'users', 'href' => route('super-admin.accounts'), 'active' => 'super-admin.accounts'],
                 ['label' => 'Toko', 'icon' => 'store', 'href' => route('super-admin.stores'), 'active' => 'super-admin.stores*'],
                 ['label' => 'Kategori', 'icon' => 'tag', 'href' => route('super-admin.categories.index'), 'active' => 'super-admin.categories.*'],
-                ['label' => 'Admin Toko', 'icon' => 'users', 'href' => route('super-admin.store-admins'), 'active' => 'super-admin.store-admins*'],
                 ['label' => 'Aktivitas', 'icon' => 'activity', 'href' => route('super-admin.activity'), 'active' => 'super-admin.activity'],
                 ['label' => 'Pengaturan', 'icon' => 'settings', 'href' => route('super-admin.settings'), 'active' => 'super-admin.settings'],
             ],
@@ -24,19 +25,41 @@
         'cashier' => [
             'label' => 'CASHIER',
             'home' => route('cashier.dashboard'),
-            'workspaceLabel' => 'Outlet Aktif',
-            'workspaceTitle' => 'Bandung Center',
+            'workspaceLabel' => 'Toko Aktif',
+            'workspaceTitle' => 'Toko akun aktif',
             'workspaceDescription' => 'Kasir operasional',
-            'initials' => 'AR',
-            'name' => 'Ayu R.',
+            'initials' => 'K',
+            'name' => 'Akun aktif',
             'profileLabel' => 'Kasir',
             'navigationLabel' => 'Navigasi kasir',
             'menus' => [
                 ['label' => 'Dashboard', 'icon' => 'home', 'href' => route('cashier.dashboard'), 'active' => 'cashier.dashboard'],
                 ['label' => 'POS / Kasir', 'icon' => 'calculator', 'href' => route('cashier.pos'), 'active' => 'cashier.pos'],
                 ['label' => 'Produk', 'icon' => 'cube', 'href' => route('cashier.products'), 'active' => 'cashier.products'],
-                ['label' => 'Customer', 'icon' => 'users', 'href' => route('cashier.customers'), 'active' => 'cashier.customers'],
+                ['label' => 'Promo', 'icon' => 'tag', 'href' => route('cashier.promos'), 'active' => 'cashier.promos'],
                 ['label' => 'Riwayat Transaksi', 'icon' => 'receipt', 'href' => route('cashier.sales'), 'active' => 'cashier.sales'],
+                ['label' => 'Pengaturan', 'icon' => 'settings', 'href' => route('cashier.settings'), 'active' => 'cashier.settings'],
+            ],
+        ],
+        'member' => [
+            'label' => 'MEMBER',
+            'home' => route('member.dashboard'),
+            'workspaceLabel' => 'Akun member',
+            'workspaceTitle' => 'Belanja lokal',
+            'workspaceDescription' => 'Toko, promo, dan poin Anda',
+            'initials' => 'M',
+            'name' => 'Akun aktif',
+            'profileLabel' => 'Member Nivora',
+            'navigationLabel' => 'Navigasi member',
+            'menus' => [
+                ['label' => 'Ringkasan', 'icon' => 'home', 'href' => route('member.dashboard'), 'active' => 'member.dashboard'],
+                ['label' => 'Home', 'icon' => 'home', 'href' => route('home'), 'active' => 'home'],
+                ['label' => 'Jelajahi Toko', 'icon' => 'store', 'href' => route('explore'), 'active' => 'explore'],
+                ['label' => 'Riwayat Belanja', 'icon' => 'receipt', 'href' => route('member.sales'), 'active' => 'member.sales'],
+                ['label' => 'Kupon Saya', 'icon' => 'tag', 'href' => route('member.coupons'), 'active' => 'member.coupons'],
+                ['label' => 'Notifikasi', 'icon' => 'activity', 'href' => route('member.notifications'), 'active' => 'member.notifications'],
+                ['label' => 'Dompet Poin', 'icon' => 'credit-card', 'href' => route('member.wallet'), 'active' => 'member.wallet'],
+                ['label' => 'Daftar Toko', 'icon' => 'briefcase', 'href' => route('member.business-application'), 'active' => 'member.business-application'],
             ],
         ],
         default => [
@@ -45,21 +68,22 @@
             'workspaceLabel' => 'Workspace',
             'workspaceTitle' => 'Operasional toko',
             'workspaceDescription' => 'Kelola toko dan aktivitas bisnis',
-            'initials' => 'AR',
-            'name' => 'Ayu R.',
+            'initials' => 'O',
+            'name' => 'Akun aktif',
             'profileLabel' => 'Admin Toko',
             'navigationLabel' => 'Navigasi Owner',
             'menus' => [
                 ['label' => 'Dashboard', 'icon' => 'home', 'href' => route('owner.dashboard'), 'active' => 'owner.dashboard'],
                 ['label' => 'Toko Saya', 'icon' => 'briefcase', 'href' => route('owner.business.index'), 'active' => 'owner.business.*'],
-                ['label' => 'Outlet', 'icon' => 'store', 'href' => route('owner.outlets.index'), 'active' => 'owner.outlets.*'],
                 ['label' => 'Produk', 'icon' => 'cube', 'href' => route('owner.products.index'), 'active' => 'owner.products.*'],
-                ['label' => 'Inventori', 'icon' => 'archive', 'href' => route('owner.inventory.index'), 'active' => 'owner.inventory.*'],
                 ['label' => 'Customer', 'icon' => 'users', 'href' => route('owner.customers.index'), 'active' => 'owner.customers.*'],
+                ['label' => 'Promo', 'icon' => 'tag', 'href' => route('owner.promotions.index'), 'active' => 'owner.promotions.*'],
                 ['label' => 'Transaksi', 'icon' => 'chart-bar', 'href' => route('owner.sales.index'), 'active' => 'owner.sales.*'],
                 ['label' => 'Laporan', 'icon' => 'credit-card', 'href' => route('owner.payments.index'), 'active' => 'owner.payments.*'],
+                ['label' => 'Kasir & Poin', 'icon' => 'users', 'href' => route('owner.cashiers.index'), 'active' => 'owner.cashiers.*'],
                 ['label' => 'AI Insights', 'icon' => 'sparkles', 'href' => route('owner.ai.index'), 'active' => 'owner.ai.*'],
                 ['label' => 'Kasir', 'icon' => 'users', 'href' => route('cashier.dashboard'), 'active' => 'cashier.*'],
+                ['label' => 'Pengaturan', 'icon' => 'settings', 'href' => route('owner.settings'), 'active' => 'owner.settings'],
             ],
         ],
     };
@@ -79,20 +103,23 @@
         <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-white lg:hidden" data-sidebar-toggle aria-label="Tutup sidebar">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 18 18 6M6 6l12 12" /></svg>
         </button>
+        @if ($role === 'cashier')
+            <button type="button" data-cashier-sidebar-toggle aria-expanded="true" class="hidden h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-white transition hover:bg-white/10 lg:inline-flex" aria-label="Tutup sidebar kasir" title="Tutup sidebar"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m3-11h5m-5 4h5"/></svg></button>
+        @endif
     </div>
 
     <div class="shrink-0 border-b border-white/10 px-5 py-5">
         <div class="rounded-2xl bg-white/10 p-3">
             <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#98E4FF]">{{ $sidebar['workspaceLabel'] }}</p>
-            <p class="mt-2 text-sm font-semibold text-white">{{ $sidebar['workspaceTitle'] }}</p>
+            <p class="mt-2 text-sm font-semibold text-white" @if (in_array($role, ['owner', 'cashier'], true)) data-session-business @endif>{{ $sidebar['workspaceTitle'] }}</p>
             <p class="mt-1 text-xs text-[#dfe7ff]">{{ $sidebar['workspaceDescription'] }}</p>
         </div>
     </div>
 
-    <nav class="min-h-0 flex-1 px-4 py-4 {{ $role === 'owner' ? 'space-y-0.5 overflow-y-auto scrollbar-hidden' : 'space-y-1 overflow-y-auto py-5' }}" aria-label="{{ $sidebar['navigationLabel'] }}">
+    <nav class="min-h-0 flex-1 px-4 py-5 space-y-1 overflow-y-auto {{ $role === 'owner' ? 'scrollbar-hidden' : '' }}" aria-label="{{ $sidebar['navigationLabel'] }}">
         @foreach ($sidebar['menus'] as $menu)
             @php($active = request()->routeIs($menu['active']))
-            <a href="{{ $menu['href'] }}" @if ($active) aria-current="page" @endif class="group flex {{ $role === 'owner' ? 'min-h-9 py-2' : 'min-h-11 py-2.5' }} items-center gap-3 rounded-xl px-3 text-sm font-medium transition {{ $active ? 'bg-[#dfe7ff] text-[#1f2544] shadow-sm' : 'text-[#dfe7ff] hover:bg-white/10 hover:text-white' }}">
+            <a href="{{ $menu['href'] }}" @if ($active) aria-current="page" @endif class="group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition {{ $active ? 'bg-[#dfe7ff] text-[#1f2544] shadow-sm' : 'text-[#dfe7ff] hover:bg-white/10 hover:text-white' }}">
                 @switch($menu['icon'])
                     @case('home')
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-9.5Z" /></svg>
@@ -147,11 +174,11 @@
             <div class="mb-3 flex items-center gap-2">
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-[#98E4FF] to-[#687EFF] text-xs font-semibold text-white">{{ $sidebar['initials'] }}</div>
                 <div>
-                    <p class="text-sm font-semibold text-white">{{ $sidebar['name'] }}</p>
+                    <p class="text-sm font-semibold text-white" data-session-user>{{ $sidebar['name'] }}</p>
                     <p class="text-[10px] text-[#dfe7ff]">{{ $sidebar['profileLabel'] }}</p>
                 </div>
             </div>
-            <a href="{{ route('home') }}" class="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#dfe7ff] px-3 py-2 text-sm font-medium text-[#1f2544] transition hover:bg-white">Logout</a>
+            <a href="{{ route('login') }}" data-auth-logout class="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#dfe7ff] px-3 py-2 text-sm font-medium text-[#1f2544] transition hover:bg-white">Keluar</a>
         </div>
     </div>
 </aside>

@@ -3,22 +3,16 @@
 @section('title', 'Tambah Kategori - Super Admin Nivora')
 
 @section('content')
-    <div class="mx-auto max-w-3xl">
-        <x-page-header eyebrow="SUPER ADMIN / KATEGORI" title="Tambah kategori" description="Buat kategori yang tersedia di platform Nivora." />
-
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <form class="space-y-5">
-                <x-input label="Name" name="name" placeholder="Masukkan nama kategori" required />
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Description</label>
-                    <textarea rows="4" placeholder="Masukkan deskripsi kategori" class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm transition focus:border-[#687EFF] focus:outline-none focus:ring-4 focus:ring-[#687EFF]/10"></textarea>
-                </div>
-
-                <div class="flex flex-col gap-3 pt-2 sm:flex-row">
-                    <x-button type="primary" size="lg">Save category</x-button>
-                    <x-button href="{{ route('super-admin.categories.index') }}" type="ghost" size="lg">Batal</x-button>
-                </div>
+    <div class="mx-auto max-w-3xl space-y-6">
+        <x-page-header eyebrow="SUPER ADMIN / KATEGORI" title="Tambah kategori" description="Buat kategori umum yang dapat digunakan di seluruh toko." />
+        <section class="overflow-hidden rounded-[28px] border border-[#e6eaff] bg-white shadow-[0_18px_50px_rgba(49,67,130,0.07)]">
+            <div class="relative flex items-center gap-4 border-b border-[#edf0fb] px-6 py-5 sm:px-7"><span class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#536dfe] via-[#8293ff] to-[#54c8e8]"></span><span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#536dfe] to-[#8190ff] text-white shadow-lg shadow-[#536dfe]/20"><svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11l9 9-7 7-9-9V5.5Z"/><circle cx="7.5" cy="7.5" r=".7" fill="currentColor"/></svg></span><div><p class="text-xs font-bold uppercase tracking-[0.16em] text-[#687eff]">Kategori baru</p><h2 class="mt-1 text-xl font-semibold tracking-tight text-[#20284a]">Informasi kategori</h2><p class="mt-1 text-sm text-[#7b8299]">Isi nama dan deskripsi yang mudah dikenali.</p></div></div>
+            <form data-super-admin-category-create class="grid gap-5 p-6 sm:p-7">
+                <div data-admin-category-message class="hidden rounded-xl border px-4 py-3 text-sm" role="alert" aria-live="assertive"></div>
+                <label class="space-y-1.5 text-xs font-semibold text-[#59617d]">Nama kategori<input name="name" required maxlength="100" placeholder="Contoh: Makanan & Minuman" class="min-h-11 w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] px-3.5 text-sm font-normal text-[#20284a] outline-none transition placeholder:text-[#a1a8bc] focus:border-[#8697ff] focus:bg-white focus:ring-4 focus:ring-[#536dfe]/10"></label>
+                <label class="space-y-1.5 text-xs font-semibold text-[#59617d]">Deskripsi <span class="font-normal text-[#8a91a9]">(opsional)</span><textarea name="description" rows="4" maxlength="2000" placeholder="Jelaskan jenis produk dalam kategori ini" class="w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] px-3.5 py-3 text-sm font-normal text-[#20284a] outline-none transition placeholder:text-[#a1a8bc] focus:border-[#8697ff] focus:bg-white focus:ring-4 focus:ring-[#536dfe]/10"></textarea></label>
+                <div class="flex flex-col-reverse gap-2 border-t border-[#edf0fb] pt-5 sm:flex-row sm:justify-end"><a href="{{ route('super-admin.categories.index') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#e4e8f4] bg-white px-4 text-sm font-semibold text-[#59617d] transition hover:-translate-y-0.5 hover:border-[#cbd3e8] hover:bg-[#f8f9fd] hover:shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/15">Batal</a><button type="submit" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#536dfe] to-[#687eff] px-5 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(83,109,254,0.2)] transition hover:-translate-y-0.5 hover:from-[#435ce7] hover:to-[#596ff5] hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/20 disabled:cursor-wait disabled:opacity-60"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>Simpan kategori</button></div>
             </form>
-        </div>
+        </section>
     </div>
 @endsection

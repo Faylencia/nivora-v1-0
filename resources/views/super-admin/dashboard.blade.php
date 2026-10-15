@@ -1,90 +1,65 @@
 @extends('layouts.super-admin')
 
-@section('title', 'Super Admin Dashboard - Nivora')
+@section('title', 'Dashboard Super Admin - Nivora')
 
 @section('content')
-    @php
-        $stats = [
-            ['label' => 'Total Toko', 'value' => '248', 'detail' => '+18 bulan ini', 'tone' => 'bg-[#eef3ff] text-[#687EFF]'],
-            ['label' => 'Toko Aktif', 'value' => '231', 'detail' => '93% dari total toko', 'tone' => 'bg-emerald-50 text-emerald-600'],
-            ['label' => 'Toko Nonaktif', 'value' => '17', 'detail' => 'Perlu ditinjau', 'tone' => 'bg-amber-50 text-amber-600'],
-            ['label' => 'Total Admin', 'value' => '312', 'detail' => '+24 bulan ini', 'tone' => 'bg-[#EAF6FF] text-[#687EFF]'],
-        ];
-
-        $stores = [
-            ['name' => 'Kopi Tuku', 'location' => 'Bandung', 'admin' => 'Ayu Sari', 'status' => 'Aktif', 'updated' => '10 menit lalu'],
-            ['name' => 'Nusa Garden', 'location' => 'Yogyakarta', 'admin' => 'Raka Pratama', 'status' => 'Aktif', 'updated' => '1 jam lalu'],
-            ['name' => 'Rasa Rakyat', 'location' => 'Surabaya', 'admin' => 'Siti Aulia', 'status' => 'Review', 'updated' => 'Kemarin'],
-        ];
-
-        $activities = [
-            'Admin baru ditambahkan ke Kopi Tuku',
-            'Toko Nusa Garden memperbarui profil bisnis',
-            'Toko Rasa Rakyat menunggu verifikasi',
-        ];
-    @endphp
-
-    <div class="space-y-6">
-        <x-page-header eyebrow="SUPER ADMIN" title="Kelola jaringan toko Nivora" description="Pantau pertumbuhan toko dan bantu setiap admin menjalankan bisnisnya.">
-            <a href="{{ route('super-admin.stores') }}" class="inline-flex min-h-11.5 items-center justify-center rounded-2xl bg-[#687EFF] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_22px_rgba(104,126,255,0.22)]">+ Tambah Toko</a>
+    <div class="space-y-6" data-super-admin-dashboard>
+        <x-page-header eyebrow="SUPER ADMIN · OVERVIEW" title="Dashboard platform" description="Pantau pertumbuhan bisnis dan aktivitas utama di seluruh platform Nivora.">
+            <a href="{{ route('super-admin.business-applications') }}" class="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#536dfe] to-[#687eff] px-4 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(83,109,254,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(83,109,254,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/20">
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3.75h7l4.25 4.5v11A1.75 1.75 0 0 1 16.5 21h-9A1.75 1.75 0 0 1 5.75 19.25v-13.75A1.75 1.75 0 0 1 7.5 3.75Z"/><path d="M14 4v5h4.5M8.5 13h7M8.5 16.5h7"/></svg>
+                Tinjau pengajuan
+            </a>
         </x-page-header>
 
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            @foreach ($stats as $stat)
-                <div class="rounded-[26px] border border-[#e7ebff] bg-white/90 p-5 shadow-[0_18px_40px_rgba(31,37,68,0.04)]">
-                    <div class="flex items-start justify-between gap-3">
-                        <p class="text-sm text-[#5e647f]">{{ $stat['label'] }}</p>
-                        <span class="flex h-10 w-10 items-center justify-center rounded-2xl {{ $stat['tone'] }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 19h16M6 16V8m6 8V4m6 12v-5" /></svg>
-                        </span>
-                    </div>
-                    <p class="mt-4 text-3xl font-semibold tracking-tighter text-[#1f2544]">{{ $stat['value'] }}</p>
-                    <p class="mt-2 text-xs text-[#687EFF]">{{ $stat['detail'] }}</p>
-                </div>
-            @endforeach
-        </div>
+        <section class="relative isolate overflow-hidden rounded-[28px] bg-gradient-to-br from-[#20284a] via-[#394a91] to-[#687eff] p-6 text-white shadow-[0_22px_55px_rgba(49,67,130,0.2)] sm:p-8 lg:p-9">
+            <div class="pointer-events-none absolute -right-14 -top-28 -z-10 h-80 w-80 rounded-full border-[45px] border-white/[0.08]"></div>
+            <div class="pointer-events-none absolute bottom-[-8rem] right-[20%] -z-10 h-64 w-64 rounded-full bg-[#98e4ff]/10 blur-3xl"></div>
+            <div class="relative flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
+                <div class="max-w-2xl"><span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8fffb]"><span class="h-1.5 w-1.5 rounded-full bg-[#8ef1df]"></span>Platform overview</span><h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Semua pertumbuhan Nivora,<br class="hidden sm:block"> terlihat sekilas.</h2><p class="mt-3 max-w-xl text-sm leading-6 text-white/75">Ringkasan bisnis, owner, produk, dan kategori yang terdaftar di platform Anda.</p></div>
+                <a href="{{ route('super-admin.stores') }}" class="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/20">Jelajahi bisnis <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="relative mt-8 grid gap-3 border-t border-white/15 pt-5 sm:grid-cols-3">
+                <div class="flex items-center gap-3"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-[#b6fffa]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13M3 10h18M8 21v-6h8v6"/></svg></span><span><span class="block text-xs text-white/65">Bisnis terdaftar</span><span class="mt-0.5 block text-lg font-semibold">{{ number_format($businessCount) }}</span></span></div>
+                <div class="flex items-center gap-3"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-[#b6fffa]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.8 20v-1.5A4.5 4.5 0 0 1 7.3 14h3.4a4.5 4.5 0 0 1 4.5 4.5V20M16 4.8a3.5 3.5 0 0 1 0 6.7m2 2.8a4.5 4.5 0 0 1 3.2 4.2V20"/></svg></span><span><span class="block text-xs text-white/65">Owner terdaftar</span><span class="mt-0.5 block text-lg font-semibold">{{ number_format($ownerCount) }}</span></span></div>
+                <div class="flex items-center gap-3"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-[#b6fffa]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 0v9m8-4.5-8 4.5-8-4.5"/></svg></span><span><span class="block text-xs text-white/65">Produk tersedia</span><span class="mt-0.5 block text-lg font-semibold">{{ number_format($productCount) }}</span></span></div>
+            </div>
+        </section>
 
-        <div class="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-            <section class="rounded-[28px] border border-[#e7ebff] bg-white/90 p-5 shadow-[0_18px_40px_rgba(31,37,68,0.04)]">
-                <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h2 class="text-xl font-semibold text-[#1f2544]">Toko terbaru</h2>
-                        <p class="mt-1 text-sm text-[#5e647f]">Daftar toko yang baru aktif di platform.</p>
-                    </div>
-                    <a href="{{ route('super-admin.stores') }}" class="text-sm font-semibold text-[#687EFF]">Lihat semua</a>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-left text-sm text-[#5e647f]">
-                        <thead>
-                            <tr class="border-b border-[#e7ebff]">
-                                <th class="pb-3 pr-4 font-medium text-[#1f2544]">Toko</th>
-                                <th class="pb-3 pr-4 font-medium text-[#1f2544]">Admin</th>
-                                <th class="pb-3 pr-4 font-medium text-[#1f2544]">Status</th>
-                                <th class="pb-3 font-medium text-[#1f2544]">Update</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($stores as $store)
-                                <tr class="border-b border-[#eef3ff]">
-                                    <td class="py-4 pr-4"><p class="font-semibold text-[#1f2544]">{{ $store['name'] }}</p><p class="mt-1 text-xs">{{ $store['location'] }}</p></td>
-                                    <td class="py-4 pr-4">{{ $store['admin'] }}</td>
-                                    <td class="py-4 pr-4"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium {{ $store['status'] === 'Aktif' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' }}">{{ $store['status'] }}</span></td>
-                                    <td class="py-4">{{ $store['updated'] }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="ni-stat-card group transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(31,37,68,0.08)]"><div class="flex items-start justify-between"><p class="text-sm font-medium text-[#68708b]">Bisnis terdaftar</p><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#536dfe] transition group-hover:scale-105"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13M3 10h18M8 21v-6h8v6"/></svg></span></div><p class="mt-4 text-3xl font-semibold tracking-tight text-[#20284a]">{{ number_format($businessCount) }}</p><p class="mt-1 text-xs text-[#8a91a9]">Bisnis yang bergabung di Nivora</p></article>
+            <article class="ni-stat-card group transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(31,37,68,0.08)]"><div class="flex items-start justify-between"><p class="text-sm font-medium text-[#68708b]">Owner terdaftar</p><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e9f8ff] text-[#2797bf] transition group-hover:scale-105"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.8 20v-1.5A4.5 4.5 0 0 1 7.3 14h3.4a4.5 4.5 0 0 1 4.5 4.5V20m.8-14.9a3.5 3.5 0 0 1 0 6.7M18 14a4.5 4.5 0 0 1 3.2 4.2V20"/></svg></span></div><p class="mt-4 text-3xl font-semibold tracking-tight text-[#20284a]">{{ number_format($ownerCount) }}</p><p class="mt-1 text-xs text-[#8a91a9]">Pengelola bisnis di platform</p></article>
+            <article class="ni-stat-card group transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(31,37,68,0.08)]"><div class="flex items-start justify-between"><p class="text-sm font-medium text-[#68708b]">Produk tersimpan</p><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff6e8] text-[#e4a13b] transition group-hover:scale-105"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 0v9m8-4.5-8 4.5-8-4.5"/></svg></span></div><p class="mt-4 text-3xl font-semibold tracking-tight text-[#20284a]">{{ number_format($productCount) }}</p><p class="mt-1 text-xs text-[#8a91a9]">Katalog produk seluruh bisnis</p></article>
+            <article class="ni-stat-card group transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(31,37,68,0.08)]"><div class="flex items-start justify-between"><p class="text-sm font-medium text-[#68708b]">Kategori tersimpan</p><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eefaf2] text-[#35a16b] transition group-hover:scale-105"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></span></div><p class="mt-4 text-3xl font-semibold tracking-tight text-[#20284a]">{{ number_format($categoryCount) }}</p><p class="mt-1 text-xs text-[#8a91a9]">Kategori produk yang tersedia</p></article>
+        </section>
 
-            <section class="rounded-[28px] border border-[#e7ebff] bg-white/90 p-5 shadow-[0_18px_40px_rgba(31,37,68,0.04)]">
-                <h2 class="text-xl font-semibold text-[#1f2544]">Aktivitas terbaru</h2>
-                <div class="mt-5 space-y-3">
+        <section class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+            <div class="overflow-hidden rounded-[26px] border border-[#e6eaff] bg-white shadow-[0_18px_50px_rgba(49,67,130,0.06)]">
+                <div class="flex items-center justify-between gap-3 border-b border-[#edf0fb] p-5 sm:p-6"><div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13M3 10h18M8 21v-6h8v6"/></svg></span><div><h2 class="text-lg font-semibold tracking-tight text-[#20284a]">Bisnis terbaru</h2><p class="mt-1 text-sm text-[#7b8299]">Bisnis yang baru terdaftar di platform.</p></div></div><a href="{{ route('super-admin.stores') }}" class="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-[#536dfe] transition hover:gap-2">Lihat semua <span aria-hidden="true">→</span></a></div>
+                @if ($businesses->isEmpty())
+                    <div class="p-10 text-center"><span class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f0f2ff] text-[#687eff]"><svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13M3 10h18M8 21v-6h8v6"/></svg></span><p class="mt-3 font-semibold text-[#303858]">Belum ada bisnis terdaftar</p><p class="mt-1 text-sm text-[#7b8299]">Bisnis yang bergabung akan muncul di sini.</p></div>
+                @else
+                    <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left"><thead class="bg-[#f8f9fe] text-[10px] font-bold uppercase tracking-[0.12em] text-[#8a91a9]"><tr><th class="px-5 py-3.5">Bisnis</th><th class="px-4 py-3.5">Jenis</th><th class="px-4 py-3.5">Lokasi toko</th><th class="px-4 py-3.5">Produk</th><th class="px-4 py-3.5">Status</th><th class="px-5 py-3.5">Diperbarui</th></tr></thead><tbody class="divide-y divide-[#edf0f8]">
+                        @foreach ($businesses as $business)
+                            <tr class="transition hover:bg-[#fafbff]"><td class="px-5 py-4"><a href="{{ route('super-admin.stores.show', ['store' => $business->id]) }}" class="font-semibold text-[#303858] transition hover:text-[#536dfe]">{{ $business->name }}</a></td><td class="px-4 py-4 text-sm text-[#68708b]">{{ $business->business_type }}</td><td class="px-4 py-4 text-sm font-medium text-[#4e5677]">{{ $business->locationName() }}</td><td class="px-4 py-4 text-sm font-medium text-[#4e5677]">{{ number_format($business->products_count) }}</td><td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold {{ $business->status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}"><span class="store-status-dot h-2 w-2 shrink-0 rounded-full {{ $business->status === 'active' ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>{{ $business->status === 'active' ? 'Aktif' : 'Nonaktif' }}</span></td><td class="px-5 py-4 text-xs text-[#7b8299]">{{ $business->updated_at?->format('d M Y H:i') ?: '—' }}</td></tr>
+                        @endforeach
+                    </tbody></table></div>
+                @endif
+            </div>
+            <aside class="ni-panel flex flex-col p-5 sm:p-6"><span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#536dfe] to-[#8493ff] text-white shadow-lg shadow-[#536dfe]/20"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3v3m0 12v3M4.2 6.2l2.1 2.1m11.4 7.4 2.1 2.1M3 12h3m12 0h3M4.2 17.8l2.1-2.1m11.4-7.4 2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></span><h2 class="mt-4 text-lg font-semibold text-[#20284a]">Aksi cepat</h2><p class="mt-1 text-sm leading-6 text-[#7b8299]">Kelola hal penting di platform Anda.</p><div class="mt-5 space-y-2"><a href="{{ route('super-admin.business-applications') }}" class="group flex items-center justify-between rounded-xl border border-[#e8ebf7] bg-white p-3 transition hover:border-[#cbd4ff] hover:bg-[#f8f9ff]"><span class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3.75h7l4.25 4.5v11A1.75 1.75 0 0 1 16.5 21h-9A1.75 1.75 0 0 1 5.75 19.25v-13.75A1.75 1.75 0 0 1 7.5 3.75Z"/><path d="M14 4v5h4.5M8.5 13h7M8.5 16.5h4"/></svg></span><span class="text-sm font-semibold text-[#39415f]">Pengajuan toko</span></span><span class="text-[#8a91a9] transition group-hover:translate-x-0.5 group-hover:text-[#536dfe]">→</span></a><a href="{{ route('super-admin.stores') }}" class="group flex items-center justify-between rounded-xl border border-[#e8ebf7] bg-white p-3 transition hover:border-[#cbd4ff] hover:bg-[#f8f9ff]"><span class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e9f8ff] text-[#2797bf]"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13M3 10h18M8 21v-6h8v6"/></svg></span><span class="text-sm font-semibold text-[#39415f]">Kelola bisnis</span></span><span class="text-[#8a91a9] transition group-hover:translate-x-0.5 group-hover:text-[#536dfe]">→</span></a><a href="{{ route('super-admin.accounts') }}" class="group flex items-center justify-between rounded-xl border border-[#e8ebf7] bg-white p-3 transition hover:border-[#cbd4ff] hover:bg-[#f8f9ff]"><span class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#eefaf2] text-[#35a16b]"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.8 20v-1.5A4.5 4.5 0 0 1 7.3 14h3.4a4.5 4.5 0 0 1 4.5 4.5V20m.8-14.9a3.5 3.5 0 0 1 0 6.7M18 14a4.5 4.5 0 0 1 3.2 4.2V20"/></svg></span><span class="text-sm font-semibold text-[#39415f]">Kelola akun</span></span><span class="text-[#8a91a9] transition group-hover:translate-x-0.5 group-hover:text-[#536dfe]">→</span></a></div><div class="mt-auto border-t border-[#edf0fb] pt-4"><p class="flex items-center gap-2 text-xs font-medium text-[#68708b]"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Data platform diperbarui langsung</p></div></aside>
+        </section>
+
+        <section class="overflow-hidden rounded-[26px] border border-[#e6eaff] bg-white shadow-[0_18px_50px_rgba(49,67,130,0.06)]">
+            <div class="flex items-center justify-between gap-3 border-b border-[#edf0fb] p-5 sm:p-6"><div class="flex items-start gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff6e8] text-[#e4a13b]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h2 class="text-lg font-semibold tracking-tight text-[#20284a]">Aktivitas platform</h2><p class="mt-1 text-sm text-[#7b8299]">Catatan terbaru dari aktivitas penting di Nivora.</p></div></div><a href="{{ route('super-admin.activity') }}" class="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-[#536dfe] transition hover:gap-2">Lihat semua <span aria-hidden="true">→</span></a></div>
+            @if ($activities->isEmpty())
+                <div class="p-8 text-center"><p class="font-semibold text-[#303858]">Aktivitas akan muncul di sini</p><p class="mt-1 text-sm text-[#7b8299]">Perubahan bisnis, akun, kategori, dan keputusan pengajuan akan tercatat otomatis.</p></div>
+            @else
+                <div class="activity-list">
                     @foreach ($activities as $activity)
-                        <div class="flex gap-3 rounded-2xl border border-[#eef3ff] bg-[#f7f9ff] p-3 text-sm leading-6 text-[#5e647f]"><span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#687EFF]"></span>{{ $activity }}</div>
+                        @php($activityTone = str_contains($activity->event, 'rejected') || str_contains($activity->event, 'deleted') ? 'bg-rose-50 text-rose-600' : (str_contains($activity->event, 'approved') || str_contains($activity->event, 'created') ? 'bg-emerald-50 text-emerald-600' : 'bg-[#eef1ff] text-[#536dfe]'))
+                        <article class="flex items-start gap-3 px-5 py-4 sm:px-6"><span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl {{ $activityTone }}"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7"/></svg></span><div class="min-w-0 flex-1"><p class="text-sm leading-6 text-[#4e5677]"><span class="font-semibold text-[#303858]">{{ $activity->actor_name }}</span> {{ $activity->summary }}</p><p class="mt-1 text-xs text-[#969db2]">{{ $activity->subject_name ?: 'Platform Nivora' }} <span aria-hidden="true">·</span> {{ \Illuminate\Support\Carbon::parse($activity->created_at)->diffForHumans() }}</p></div></article>
                     @endforeach
                 </div>
-            </section>
-        </div>
+            @endif
+        </section>
     </div>
 @endsection

@@ -1,76 +1,26 @@
 @extends('layouts.owner')
 
-@section('title', 'Sales - Nivora')
+@section('title', 'Transaksi - Nivora')
 
 @section('content')
-    @php
-        $sales = [
-            ['invoice' => '#INV-1024', 'customer' => 'Nadia Putri', 'outlet' => 'Bandung Center', 'cashier' => 'Ayu R.', 'total' => 'Rp 1.250.000', 'method' => 'QRIS', 'status' => 'Paid', 'date' => '2026-09-12'],
-            ['invoice' => '#INV-1023', 'customer' => 'Fajar H.', 'outlet' => 'Jakarta Pop-up', 'cashier' => 'Dina', 'total' => 'Rp 890.000', 'method' => 'Transfer', 'status' => 'Pending', 'date' => '2026-09-11'],
-            ['invoice' => '#INV-1022', 'customer' => 'Siti A.', 'outlet' => 'Cibadak Outlet', 'cashier' => 'Raka', 'total' => 'Rp 650.000', 'method' => 'Cash', 'status' => 'Paid', 'date' => '2026-09-10'],
-        ];
-    @endphp
-
-    <div class="space-y-6">
-        <x-page-header eyebrow="OWNER / TRANSAKSI" title="Transaksi" description="Pantau seluruh transaksi yang terjadi di toko Anda." />
-
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div class="w-full max-w-md rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                    <input type="text" placeholder="Search invoice or customer" class="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400" />
-                </div>
-                <div class="flex flex-col gap-3 sm:flex-row">
-                    <input type="date" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none" />
-                    <select class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none">
-                        <option>All status</option>
-                        <option>Paid</option>
-                        <option>Pending</option>
-                    </select>
-                </div>
+    <div class="owner-transactions space-y-6" data-live-list="sales">
+        <x-page-header eyebrow="OWNER / TRANSAKSI" title="Transaksi" description="Riwayat penjualan dari database bisnis Anda.">
+            <a href="{{ route('cashier.pos') }}" class="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#536dfe] to-[#687eff] px-4 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(83,109,254,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_24px_rgba(83,109,254,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/20"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 5h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.5L21 9H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>Buka POS</a>
+        </x-page-header>
+        <div data-live-message class="hidden rounded-2xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+        <section class="transaction-hero relative isolate overflow-hidden rounded-[28px] bg-gradient-to-br from-[#20284a] via-[#394a91] to-[#687eff] p-6 text-white shadow-[0_22px_55px_rgba(49,67,130,0.2)] sm:p-8">
+            <div class="pointer-events-none absolute -right-12 -top-24 -z-10 h-72 w-72 rounded-full border-[42px] border-white/[0.08]"></div><div class="pointer-events-none absolute bottom-[-7rem] right-[24%] -z-10 h-56 w-56 rounded-full bg-[#98e4ff]/10 blur-3xl"></div>
+            <div class="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-end"><div class="max-w-2xl"><span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8fffb]"><span class="h-1.5 w-1.5 rounded-full bg-[#8ef1df]"></span>Sales overview</span><h2 class="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Semua transaksi bisnis, terpantau jelas.</h2><p class="mt-2 max-w-xl text-sm leading-6 text-white/75">Pantau riwayat penjualan, pelanggan, dan status pembayaran. Pengembalian transaksi akan memulihkan stok terkait.</p></div><div class="flex w-fit items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-[#b6fffa]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5h16v15H4zM8 3v4m8-4v4M4 10h16"/><path d="m8 15 2.5 2.5L16 12"/></svg></span><span><span class="block text-xs text-white/70">Riwayat terhubung</span><span class="mt-0.5 block text-sm font-semibold">Data penjualan langsung</span></span></div></div>
+        </section>
+        <section class="transaction-toolbar ni-panel overflow-hidden">
+            <div class="flex flex-col gap-4 border-b border-[#e7ebff] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                <div class="flex items-start gap-3"><span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5h16v15H4zM8 3v4m8-4v4M4 10h16"/><path d="M8 14h3m2 0h3M8 17h3"/></svg></span><div><div class="flex flex-wrap items-center gap-2"><h2 class="text-lg font-semibold tracking-tight text-[#20284a]">Daftar transaksi</h2><span data-live-count class="rounded-full bg-[#eef1ff] px-2.5 py-1 text-xs font-semibold text-[#536dfe]">— transaksi</span></div><p class="mt-1 text-sm text-[#7b8299]">Cari dan tinjau invoice penjualan yang tercatat melalui POS.</p></div></div>
+                <label class="transaction-search relative block w-full sm:max-w-sm"><svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a91a9]" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg><input data-live-search type="search" placeholder="Cari invoice, customer, atau toko" class="min-h-11 w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] py-2 pl-10 pr-3 text-sm outline-none transition focus:border-[#687EFF] focus:ring-4 focus:ring-[#536dfe]/10" /></label>
             </div>
-
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-left text-sm text-slate-700">
-                    <thead>
-                        <tr class="border-b border-slate-200">
-                            <th class="pb-3 pr-4 font-medium">Invoice</th>
-                            <th class="pb-3 pr-4 font-medium">Customer</th>
-                            <th class="pb-3 pr-4 font-medium">Outlet</th>
-                            <th class="pb-3 pr-4 font-medium">Cashier</th>
-                            <th class="pb-3 pr-4 font-medium">Total</th>
-                            <th class="pb-3 pr-4 font-medium">Payment</th>
-                            <th class="pb-3 pr-4 font-medium">Status</th>
-                            <th class="pb-3 font-medium">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($sales as $sale)
-                            <tr class="border-b border-slate-100">
-                                <td class="py-3 pr-4 font-medium text-slate-900">{{ $sale['invoice'] }}</td>
-                                <td class="py-3 pr-4">{{ $sale['customer'] }}</td>
-                                <td class="py-3 pr-4">{{ $sale['outlet'] }}</td>
-                                <td class="py-3 pr-4">{{ $sale['cashier'] }}</td>
-                                <td class="py-3 pr-4">{{ $sale['total'] }}</td>
-                                <td class="py-3 pr-4">{{ $sale['method'] }}</td>
-                                <td class="py-3 pr-4">
-                                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium {{ $sale['status'] === 'Paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' }}">{{ $sale['status'] }}</span>
-                                </td>
-                                <td class="py-3">{{ $sale['date'] }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-6 flex items-center justify-between text-sm text-slate-500">
-                <span>Showing 1-3 of 45</span>
-                <div class="flex gap-2">
-                    <button class="rounded-xl border border-slate-200 bg-white px-3 py-2 font-medium text-slate-600">Prev</button>
-                    <button class="rounded-xl bg-[#687EFF] px-3 py-2 font-medium text-white">1</button>
-                    <button class="rounded-xl border border-slate-200 bg-white px-3 py-2 font-medium text-slate-600">2</button>
-                    <button class="rounded-xl border border-slate-200 bg-white px-3 py-2 font-medium text-slate-600">Next</button>
-                </div>
-            </div>
-        </div>
+            <div data-live-loading class="p-12 text-center text-sm text-[#5e647f]"><span class="inline-flex items-center gap-3 rounded-2xl bg-[#f7f9ff] px-4 py-3"><span class="h-2 w-2 animate-pulse rounded-full bg-[#687EFF]"></span>Memuat transaksi…</span></div>
+            <div data-live-empty class="hidden px-6 py-14 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5h16v15H4zM8 3v4m8-4v4M4 10h16"/><path d="M8 14h8m-8 3h5"/></svg></span><p class="mt-4 font-semibold text-[#303858]">Belum ada transaksi</p><p class="mt-1 text-sm text-[#7b8299]">Transaksi yang tercatat melalui POS akan muncul di sini.</p></div>
+            <div data-live-table-wrap class="hidden overflow-x-auto"><table class="ni-table transaction-table min-w-[900px]"><thead><tr><th>Invoice</th><th>Tanggal</th><th>Customer</th><th>Toko</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody data-live-table></tbody></table></div>
+            <div class="transaction-footnote flex items-center gap-2 border-t border-[#edf0fb] bg-[#fcfcff] px-5 py-3.5 text-xs text-[#7b8299] sm:px-6"><svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0 text-[#687eff]" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>Transaksi yang dibatalkan akan mengembalikan stok produk secara otomatis.</div>
+        </section>
     </div>
 @endsection

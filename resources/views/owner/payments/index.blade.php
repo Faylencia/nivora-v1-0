@@ -1,48 +1,26 @@
 @extends('layouts.owner')
 
-@section('title', 'Payments - Nivora')
+@section('title', 'Laporan Pembayaran - Nivora')
 
 @section('content')
-    @php
-        $payments = [
-            ['reference' => 'PAY-2048', 'invoice' => '#INV-1024', 'method' => 'QRIS', 'amount' => 'Rp 1.250.000', 'status' => 'Paid', 'paid_at' => '2026-09-12 14:30'],
-            ['reference' => 'PAY-2047', 'invoice' => '#INV-1023', 'method' => 'Transfer', 'amount' => 'Rp 890.000', 'status' => 'Pending', 'paid_at' => '2026-09-11 11:15'],
-            ['reference' => 'PAY-2046', 'invoice' => '#INV-1022', 'method' => 'Cash', 'amount' => 'Rp 650.000', 'status' => 'Refunded', 'paid_at' => '2026-09-10 09:20'],
-        ];
-    @endphp
-
-    <div class="space-y-6">
-        <x-page-header eyebrow="OWNER / LAPORAN" title="Laporan pembayaran" description="Pantau status dan metode pembayaran transaksi toko." />
-
-        <div class="rounded-[28px] border border-[#e7ebff] bg-white/90 p-5 shadow-[0_16px_38px_rgba(31,37,68,0.05)]">
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-left text-sm text-[#5e647f]">
-                    <thead>
-                        <tr class="border-b border-[#e7ebff]">
-                            <th class="pb-3 pr-4 font-medium text-[#1f2544]">Payment reference</th>
-                            <th class="pb-3 pr-4 font-medium text-[#1f2544]">Invoice</th>
-                            <th class="pb-3 pr-4 font-medium text-[#1f2544]">Method</th>
-                            <th class="pb-3 pr-4 font-medium text-[#1f2544]">Amount</th>
-                            <th class="pb-3 pr-4 font-medium text-[#1f2544]">Status</th>
-                            <th class="pb-3 font-medium text-[#1f2544]">Paid at</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($payments as $payment)
-                            <tr class="border-b border-[#eef3ff]">
-                                <td class="py-3 pr-4 font-medium text-[#1f2544]">{{ $payment['reference'] }}</td>
-                                <td class="py-3 pr-4">{{ $payment['invoice'] }}</td>
-                                <td class="py-3 pr-4">{{ $payment['method'] }}</td>
-                                <td class="py-3 pr-4">{{ $payment['amount'] }}</td>
-                                <td class="py-3 pr-4">
-                                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium {{ $payment['status'] === 'Paid' ? 'bg-emerald-50 text-emerald-600' : ($payment['status'] === 'Pending' ? 'bg-amber-50 text-amber-600' : ($payment['status'] === 'Failed' ? 'bg-rose-50 text-rose-600' : 'bg-sky-50 text-sky-600')) }}">{{ $payment['status'] }}</span>
-                                </td>
-                                <td class="py-3">{{ $payment['paid_at'] }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <div class="owner-transactions space-y-6" data-live-list="payments">
+        <x-page-header eyebrow="OWNER / LAPORAN" title="Laporan pembayaran" description="Pembayaran yang benar-benar tercatat dari transaksi bisnis Anda.">
+            <a href="{{ route('owner.sales.index') }}" class="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#e3e8f6] bg-white px-4 text-sm font-semibold text-[#58617f] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b8c4ff] hover:bg-[#f7f8ff] hover:text-[#536dfe] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/15"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v15H4zM8 3v4m8-4v4M4 10h16"/><path d="m8 15 2.5 2.5L16 12"/></svg>Lihat transaksi</a>
+        </x-page-header>
+        <div data-live-message class="hidden rounded-2xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+        <section class="transaction-hero relative isolate overflow-hidden rounded-[28px] bg-gradient-to-br from-[#20284a] via-[#394a91] to-[#687eff] p-6 text-white shadow-[0_22px_55px_rgba(49,67,130,0.2)] sm:p-8">
+            <div class="pointer-events-none absolute -right-12 -top-24 -z-10 h-72 w-72 rounded-full border-[42px] border-white/[0.08]"></div><div class="pointer-events-none absolute bottom-[-7rem] right-[24%] -z-10 h-56 w-56 rounded-full bg-[#98e4ff]/10 blur-3xl"></div>
+            <div class="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-end"><div class="max-w-2xl"><span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8fffb]"><span class="h-1.5 w-1.5 rounded-full bg-[#8ef1df]"></span>Payment overview</span><h2 class="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">Arus pembayaran bisnis, tercatat rapi.</h2><p class="mt-2 max-w-xl text-sm leading-6 text-white/75">Tinjau referensi, invoice, metode, nominal, dan waktu pembayaran dalam satu laporan.</p></div><div class="flex w-fit items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-[#b6fffa]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18m-13 4h3"/></svg></span><span><span class="block text-xs text-white/70">Rekonsiliasi pembayaran</span><span class="mt-0.5 block text-sm font-semibold">Data tersimpan langsung</span></span></div></div>
+        </section>
+        <section class="transaction-toolbar ni-panel overflow-hidden">
+            <div class="flex flex-col gap-4 border-b border-[#e7ebff] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                <div class="flex items-start gap-3"><span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5h16v15H4zM8 3v4m8-4v4M4 10h16"/><path d="M8 14h8m-8 3h5"/></svg></span><div><div class="flex flex-wrap items-center gap-2"><h2 class="text-lg font-semibold tracking-tight text-[#20284a]">Daftar pembayaran</h2><span data-live-count class="rounded-full bg-[#eef1ff] px-2.5 py-1 text-xs font-semibold text-[#536dfe]">— pembayaran</span></div><p class="mt-1 text-sm text-[#7b8299]">Telusuri pembayaran berdasarkan referensi, invoice, atau metode.</p></div></div>
+                <label class="transaction-search relative block w-full sm:max-w-sm"><svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a91a9]" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg><input data-live-search type="search" placeholder="Cari referensi, invoice, atau metode" class="min-h-11 w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] py-2 pl-10 pr-3 text-sm outline-none transition focus:border-[#687EFF] focus:ring-4 focus:ring-[#536dfe]/10" /></label>
             </div>
-        </div>
+            <div data-live-loading class="p-12 text-center text-sm text-[#5e647f]"><span class="inline-flex items-center gap-3 rounded-2xl bg-[#f7f9ff] px-4 py-3"><span class="h-2 w-2 animate-pulse rounded-full bg-[#687EFF]"></span>Memuat pembayaran…</span></div>
+            <div data-live-empty class="hidden px-6 py-14 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18m-13 4h8m-8 3h5"/></svg></span><p class="mt-4 font-semibold text-[#303858]">Belum ada pembayaran</p><p class="mt-1 text-sm text-[#7b8299]">Pembayaran akan tampil setelah transaksi tercatat.</p></div>
+            <div data-live-table-wrap class="hidden overflow-x-auto"><table class="ni-table transaction-table min-w-[820px]"><thead><tr><th>Referensi</th><th>Invoice</th><th>Metode</th><th>Jumlah</th><th>Status</th><th>Waktu bayar</th></tr></thead><tbody data-live-table></tbody></table></div>
+            <div class="transaction-footnote flex items-center gap-2 border-t border-[#edf0fb] bg-[#fcfcff] px-5 py-3.5 text-xs text-[#7b8299] sm:px-6"><svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0 text-[#687eff]" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>Laporan ini menampilkan pembayaran yang tercatat dari transaksi bisnis Anda.</div>
+        </section>
     </div>
 @endsection

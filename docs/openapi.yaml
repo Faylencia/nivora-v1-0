@@ -1,0 +1,2070 @@
+openapi: 3.1.0
+info:
+  title: NIVORA Business API
+  version: 1.1.0
+  description: >-
+    Kontrak API web NIVORA untuk akun member, pengajuan toko, akses owner/kasir,
+    katalog member, kupon, poin, notifikasi, inventori, promo, dan transaksi POS.
+    Endpoint terlindungi memakai Bearer token; X-Business-ID memilih konteks
+    bisnis untuk owner dan super admin.
+servers:
+  - url: /api/v1
+    description: Origin aplikasi saat ini
+tags:
+  - name: Authentication
+  - name: Catalog
+  - name: Inventory
+  - name: Promotions
+  - name: Sales
+  - name: Member
+  - name: Business Applications
+  - name: Cashiers
+  - name: Super Admin
+security:
+  - bearerAuth: []
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Daftarkan akun member Nivora
+      description: Registrasi publik hanya membuat akun member. Untuk membuka toko, member mengirim pengajuan yang harus disetujui super admin.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Akun dibuat dan token diterbitkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Masuk dan memperoleh Bearer token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Ambil profil pengguna yang sedang login
+      responses:
+        '200':
+          description: Profil berhasil ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Cabut token aktif
+      responses:
+        '200':
+          description: Token berhasil dicabut
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /business-applications:
+    post:
+      tags: [Business Applications]
+      summary: Ajukan pendaftaran toko sebagai member
+      description: Pengajuan belum memberi akses owner sampai disetujui super admin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessApplicationRequest'
+      responses:
+        '201':
+          description: Pengajuan menunggu tinjauan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessApplicationResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Akun sudah owner atau memiliki pengajuan tertunda
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /member/business-applications:
+    get:
+      tags: [Member, Business Applications]
+      summary: Lihat status pengajuan toko milik sendiri
+      responses:
+        '200':
+          description: Riwayat pengajuan pengguna
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessApplicationsListResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /super-admin/business-options:
+    get:
+      tags: [Super Admin]
+      summary: Daftar bisnis aktif untuk pemilih konteks super admin
+      responses:
+        '200':
+          description: Bisnis aktif beserta outlet aktif pertama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessOptionsResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /super-admin/members:
+    get:
+      tags: [Super Admin, Member]
+      summary: Cari akun yang terdaftar sebagai member
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Akun member beserta role lain yang melekat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedMembersResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /super-admin/users/{user}:
+    parameters:
+      - name: user
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      tags: [Super Admin]
+      summary: Ubah profil, status, atau password akun pengguna
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                  minLength: 7
+                  maxLength: 30
+                status:
+                  type: string
+                  enum: [active, inactive]
+                password:
+                  type: string
+                  minLength: 8
+                password_confirmation:
+                  type: string
+      responses:
+        '200':
+          description: Akun diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /super-admin/businesses/{business}:
+    parameters:
+      - name: business
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      tags: [Super Admin]
+      summary: Ubah profil dan status bisnis mana pun
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  maxLength: 150
+                business_type:
+                  type: string
+                  maxLength: 100
+                phone:
+                  type: [string, 'null']
+                  maxLength: 30
+                address:
+                  type: [string, 'null']
+                  maxLength: 2000
+                status:
+                  type: string
+                  enum: [active, inactive]
+      responses:
+        '200':
+          description: Bisnis diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /super-admin/categories:
+    post:
+      tags: [Super Admin, Catalog]
+      summary: Buat kategori pada bisnis mana pun (super admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [business_id, name]
+              properties:
+                business_id:
+                  type: integer
+                name:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: [string, 'null']
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Kategori dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Nama kategori sudah digunakan di bisnis tersebut
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /super-admin/categories/{category}:
+    parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      tags: [Super Admin, Catalog]
+      summary: Ubah kategori bisnis mana pun (super admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: [string, 'null']
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Kategori diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Nama kategori sudah digunakan di bisnis tersebut
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /super-admin/business-applications:
+    get:
+      tags: [Super Admin, Business Applications]
+      summary: Daftar pengajuan toko untuk ditinjau
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+      responses:
+        '200':
+          description: Daftar pengajuan toko
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessApplicationsListResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /super-admin/business-applications/{application}/approve:
+    parameters:
+      - name: application
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: [Super Admin, Business Applications]
+      summary: Setujui pengajuan dan buat bisnis, outlet, serta role owner
+      responses:
+        '200':
+          description: Pemohon mendapat akses owner dan notifikasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Pengajuan sudah ditinjau
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /super-admin/business-applications/{application}/reject:
+    parameters:
+      - name: application
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: [Super Admin, Business Applications]
+      summary: Tolak pengajuan dan kirim alasan kepada pemohon
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                review_note:
+                  type: [string, 'null']
+                  maxLength: 2000
+      responses:
+        '200':
+          description: Pengajuan ditolak
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Pengajuan sudah ditinjau
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cashiers:
+    get:
+      tags: [Cashiers]
+      summary: Daftar kasir dan saldo poin di bisnis aktif (owner)
+      responses:
+        '200':
+          description: Daftar kasir
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashierListResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Cashiers]
+      summary: Buat akun kasir pada bisnis aktif (owner)
+      description: Kasir login melalui endpoint login bersama; token tidak dikembalikan saat akun dibuat.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CashierRequest'
+      responses:
+        '201':
+          description: Akun kasir dibuat dengan saldo poin awal nol
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /cashiers/{cashier}:
+    parameters:
+      - name: cashier
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      tags: [Cashiers]
+      summary: Ubah profil atau outlet kasir (owner)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CashierUpdateRequest'
+      responses:
+        '200':
+          description: Data kasir diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Cashiers]
+      summary: Cabut akses kasir pada bisnis aktif (owner)
+      responses:
+        '200':
+          description: Akses kasir dicabut tanpa menghapus akun member lain
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /cashiers/{cashier}/points:
+    parameters:
+      - name: cashier
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: [Cashiers]
+      summary: Isi saldo poin kasir untuk transfer kembalian (owner)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [points]
+              properties:
+                points:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Saldo poin kasir bertambah
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /cashiers/member-lookup:
+    get:
+      tags: [Cashiers]
+      summary: Verifikasi nomor telepon member pada POS
+      parameters:
+        - name: phone
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status pencarian, identitas ringkas, serta saldo poin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberLookupResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /directory/businesses:
+    get:
+      tags: [Member]
+      summary: Jelajahi toko aktif sebagai member
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Toko aktif beserta jumlah produk dan outlet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessDirectoryResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /directory/businesses/{business}:
+    parameters:
+      - name: business
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [Member]
+      summary: Lihat lokasi, stok, produk, dan promo aktif toko
+      responses:
+        '200':
+          description: Detail toko dan stok per outlet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessDetailResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /directory/products/{product}:
+    parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [Member]
+      summary: Lihat produk dan stok per outlet sebagai member
+      responses:
+        '200':
+          description: Detail produk aktif
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /member/dashboard:
+    get:
+      tags: [Member]
+      summary: Ringkasan akun, poin, kupon, dan notifikasi member
+      responses:
+        '200':
+          description: Statistik akun member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /member/sales:
+    get:
+      tags: [Member]
+      summary: Riwayat transaksi milik member yang login
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Riwayat belanja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedSalesResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /member/coupons:
+    get:
+      tags: [Member]
+      summary: Daftar kupon loyalitas milik member
+      responses:
+        '200':
+          description: Kupon aktif, kedaluwarsa, dan terpakai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberCouponsResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /member/wallet:
+    get:
+      tags: [Member]
+      summary: Saldo dan ledger poin member
+      responses:
+        '200':
+          description: Saldo poin dan transaksi terakhir
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberWalletResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /member/notifications:
+    get:
+      tags: [Member]
+      summary: Notifikasi promo, ketersediaan stok, kupon, dan pengajuan
+      responses:
+        '200':
+          description: Kotak masuk dan jumlah notifikasi belum dibaca
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberNotificationsResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /member/notifications/{notification}/read:
+    parameters:
+      - name: notification
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      tags: [Member]
+      summary: Tandai notifikasi milik sendiri sudah dibaca
+      responses:
+        '200':
+          description: Notifikasi ditandai sudah dibaca
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /categories:
+    get:
+      tags: [Catalog]
+      summary: Daftar kategori bisnis
+      responses:
+        '200':
+          description: Daftar kategori
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Category'
+    post:
+      tags: [Catalog]
+      summary: Buat kategori (owner)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: [string, 'null']
+      responses:
+        '201':
+          description: Kategori dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /products:
+    get:
+      tags: [Catalog]
+      summary: Daftar dan pencarian produk
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: category_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Daftar produk berpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedProductsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Catalog]
+      summary: Buat produk (owner)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '201':
+          description: Produk dibuat
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Product'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /outlets:
+    get:
+      tags: [Catalog]
+      summary: Daftar outlet aktif dan nonaktif
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Daftar outlet berpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedOutletsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /inventory:
+    get:
+      tags: [Inventory]
+      summary: Stok per outlet dan produk
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: outlet_id
+          in: query
+          schema:
+            type: integer
+        - name: product_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Data inventori berpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedInventoryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /inventory/adjustment:
+    post:
+      tags: [Inventory]
+      summary: Tambah atau sesuaikan stok (owner)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id, outlet_id, quantity]
+              properties:
+                product_id:
+                  type: integer
+                outlet_id:
+                  type: integer
+                quantity:
+                  type: integer
+                  description: Nilai positif untuk menambah stok; nilai negatif untuk mengurangi.
+                minimum_stock:
+                  type: [integer, 'null']
+                  minimum: 0
+                maximum_stock:
+                  type: [integer, 'null']
+                  minimum: 0
+                notes:
+                  type: [string, 'null']
+      responses:
+        '200':
+          description: Inventori berhasil disesuaikan
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Inventory'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /customers:
+    get:
+      tags: [Catalog]
+      summary: Daftar customer bisnis
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Daftar customer berpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedCustomersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /promotions:
+    get:
+      tags: [Promotions]
+      summary: Daftar promo milik bisnis aktif
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [product, transaction]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive]
+        - name: current_only
+          in: query
+          description: Jika true, kembalikan promo aktif dalam rentang tanggal saat ini.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Daftar promo berpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedPromotionsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Promotions]
+      summary: Buat promo (owner)
+      description: Untuk type product, product_ids wajib berisi setidaknya satu produk bisnis ini. Kode promo dapat dibagikan ke member; tanpa kode promo berlaku otomatis.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionRequest'
+            examples:
+              productPromotion:
+                summary: Promo produk 20 persen
+                value:
+                  name: Diskon Kopi
+                  description: Diskon untuk produk kopi pilihan
+                  type: product
+                  discount_value: 20
+                  min_transaction: null
+                  start_date: '2026-09-28T00:00:00Z'
+                  end_date: '2026-10-31T23:59:59Z'
+                  status: active
+                  product_ids: [1, 2]
+              transactionPromotion:
+                summary: Promo transaksi 10 persen
+                value:
+                  name: Hemat Belanja
+                  code: BELANJA10
+                  type: transaction
+                  discount_value: 10
+                  min_transaction: 100000
+                  start_date: '2026-09-28T00:00:00Z'
+                  end_date: '2026-10-31T23:59:59Z'
+                  status: active
+      responses:
+        '201':
+          description: Promo dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /promotions/{promo}:
+    parameters:
+      - name: promo
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [Promotions]
+      summary: Detail promo
+      responses:
+        '200':
+          description: Detail promo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Promotions]
+      summary: Ubah promo (owner)
+      description: Request bersifat parsial. Untuk type product, kirim product_ids jika ingin mengganti produk promo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromotionUpdateRequest'
+      responses:
+        '200':
+          description: Promo diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromotionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      tags: [Promotions]
+      summary: Hapus atau nonaktifkan promo (owner)
+      description: Promo yang pernah dipakai transaksi dinonaktifkan agar histori penjualan tetap utuh.
+      responses:
+        '200':
+          description: Promo dihapus atau dinonaktifkan; data berisi promo jika dipakai transaksi, selain itu null
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        oneOf:
+                          - $ref: '#/components/schemas/Promotion'
+                          - type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /sales:
+    get:
+      tags: [Sales]
+      summary: Daftar transaksi bisnis
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - name: outlet_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [completed, cancelled, returned]
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Daftar transaksi berpaginasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedSalesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Sales]
+      summary: Buat transaksi POS dan terapkan promo yang dipilih
+      description: Backend memvalidasi stok, status/periode promo, minimum transaksi, menghitung diskon, dan menyimpan pemakaian pada sale_promos.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+      responses:
+        '201':
+          description: Transaksi tersimpan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /sales/{sale}/return:
+    parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: [Sales]
+      summary: Batalkan transaksi dan pulihkan stok (owner/super admin)
+      description: Operasi atomik; transaksi yang sudah dikembalikan tidak dapat diproses ulang. Kupon/poin terkait ikut diselaraskan.
+      responses:
+        '200':
+          description: Transaksi berhasil dikembalikan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Transaksi bukan completed atau saldo poin tidak cukup untuk reversal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Laravel encrypted token
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+  responses:
+    Unauthorized:
+      description: Token tidak ada, tidak valid, atau kedaluwarsa
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Akun tidak memiliki role atau akses bisnis yang dibutuhkan
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource tidak ditemukan di bisnis aktif
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Validasi input gagal
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    SuccessEnvelope:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          const: true
+        message:
+          type: string
+        data: {}
+    EmptyResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: [object, 'null']
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          const: false
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    RegisterRequest:
+      type: object
+      required: [name, email, phone, password, password_confirmation]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 150
+        password:
+          type: string
+          minLength: 8
+        password_confirmation:
+          type: string
+        phone:
+          type: string
+          maxLength: 30
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SessionData'
+    RegisterResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SessionData'
+    SessionData:
+      type: object
+      required: [token, expires_at, user]
+      properties:
+        token:
+          type: string
+        expires_at:
+          type: integer
+          description: Unix timestamp dalam detik.
+        user:
+          $ref: '#/components/schemas/User'
+        business:
+          oneOf:
+            - $ref: '#/components/schemas/Business'
+            - type: 'null'
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: [string, 'null']
+        status:
+          type: string
+        roles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              business_id:
+                type: [integer, 'null']
+              outlet_id:
+                type: [integer, 'null']
+    Business:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        business_type:
+          type: string
+        phone:
+          type: [string, 'null']
+        address:
+          type: [string, 'null']
+        status:
+          type: string
+        outlets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Outlet'
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        business_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: [string, 'null']
+    Outlet:
+      type: object
+      properties:
+        id:
+          type: integer
+        business_id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: [string, 'null']
+        phone:
+          type: [string, 'null']
+        status:
+          type: string
+    ProductRequest:
+      type: object
+      required: [category_id, sku, name, purchase_price, selling_price]
+      properties:
+        category_id:
+          type: integer
+        sku:
+          type: string
+          maxLength: 80
+        barcode:
+          type: [string, 'null']
+          maxLength: 100
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: [string, 'null']
+        purchase_price:
+          type: number
+          minimum: 0
+        selling_price:
+          type: number
+          minimum: 0
+        unit:
+          type: [string, 'null']
+          maxLength: 30
+        image:
+          type: [string, 'null']
+          maxLength: 255
+        is_active:
+          type: boolean
+    Product:
+      allOf:
+        - $ref: '#/components/schemas/ProductRequest'
+        - type: object
+          properties:
+            id:
+              type: integer
+            business_id:
+              type: integer
+            category:
+              $ref: '#/components/schemas/Category'
+    Inventory:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        outlet_id:
+          type: integer
+        stock:
+          type: integer
+        minimum_stock:
+          type: integer
+        maximum_stock:
+          type: [integer, 'null']
+        reserved_stock:
+          type: integer
+        available_stock:
+          type: integer
+        product:
+          $ref: '#/components/schemas/Product'
+        outlet:
+          $ref: '#/components/schemas/Outlet'
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        business_id:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: [string, 'null']
+        email:
+          type: [string, 'null']
+        points:
+          type: integer
+    PromotionRequest:
+      type: object
+      required: [name, type, discount_value, start_date, end_date]
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        code:
+          type: [string, 'null']
+          maxLength: 32
+          pattern: '^[A-Za-z0-9_-]+$'
+        description:
+          type: [string, 'null']
+        type:
+          type: string
+          enum: [product, transaction]
+        discount_value:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Persentase diskon, sesuai konvensi MVP ERD.
+        min_transaction:
+          type: [number, 'null']
+          minimum: 0
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, inactive]
+          default: active
+        product_ids:
+          type: array
+          uniqueItems: true
+          items:
+            type: integer
+          description: Wajib minimal satu ID jika type adalah product; tidak dipakai untuk transaction.
+    PromotionUpdateRequest:
+      type: object
+      description: Semua properti bersifat opsional untuk update parsial.
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        code:
+          type: [string, 'null']
+          maxLength: 32
+          pattern: '^[A-Za-z0-9_-]+$'
+        description:
+          type: [string, 'null']
+        type:
+          type: string
+          enum: [product, transaction]
+        discount_value:
+          type: number
+          minimum: 0
+          maximum: 100
+        min_transaction:
+          type: [number, 'null']
+          minimum: 0
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, inactive]
+        product_ids:
+          type: array
+          uniqueItems: true
+          items:
+            type: integer
+    Promotion:
+      type: object
+      properties:
+        id:
+          type: integer
+        business_id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: [string, 'null']
+          maxLength: 32
+        description:
+          type: [string, 'null']
+        type:
+          type: string
+          enum: [product, transaction]
+        discount_value:
+          type: number
+        min_transaction:
+          type: [number, 'null']
+        start_date:
+          type: string
+          format: date-time
+          description: Waktu ISO 8601, misalnya 2026-09-28T00:00:00Z.
+        end_date:
+          type: string
+          format: date-time
+          description: Waktu ISO 8601, misalnya 2026-10-31T23:59:59Z.
+        status:
+          type: string
+          enum: [active, inactive]
+        is_currently_active:
+          type: boolean
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        created_at:
+          type: [string, 'null']
+          format: date-time
+        updated_at:
+          type: [string, 'null']
+          format: date-time
+    PromotionResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Promotion'
+    SaleRequest:
+      type: object
+      required: [outlet_id, items, payment_method, paid]
+      properties:
+        outlet_id:
+          type: integer
+        customer_id:
+          type: [integer, 'null']
+        member_phone:
+          type: [string, 'null']
+          maxLength: 30
+          description: Nomor akun member, dinormalisasi sebelum pencarian.
+        coupon_code:
+          type: [string, 'null']
+          maxLength: 32
+          description: Kupon loyalitas pribadi atau kode promo toko; hanya dapat digunakan setelah verifikasi member.
+        points_to_member:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Poin rupiah dari kembalian tunai yang dikirim ke member; dibatasi oleh kembalian dan saldo poin kasir.
+        points_to_redeem:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Poin member yang digunakan untuk membayar; maksimal saldo member dan total transaksi setelah diskon.
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [product_id, quantity]
+            properties:
+              product_id:
+                type: integer
+              quantity:
+                type: integer
+                minimum: 1
+        promo_ids:
+          type: array
+          items:
+            type: integer
+          uniqueItems: true
+        discount:
+          type: number
+          minimum: 0
+          default: 0
+        tax:
+          type: number
+          minimum: 0
+          default: 0
+        payment_method:
+          type: string
+          maxLength: 30
+          examples: [cash, debit, bank_transfer, ewallet]
+        paid:
+          type: number
+          minimum: 0
+          description: Nominal yang dibayar dengan metode pembayaran terpilih; poin menutup sisa total secara terpisah.
+    Sale:
+      type: object
+      properties:
+        id:
+          type: integer
+        business_id:
+          type: integer
+        outlet_id:
+          type: integer
+        user_id:
+          type: integer
+        customer_id:
+          type: [integer, 'null']
+        member_user_id:
+          type: [integer, 'null']
+        invoice_number:
+          type: string
+        subtotal:
+          type: number
+        discount:
+          type: number
+          description: Gabungan diskon manual dan promo.
+        tax:
+          type: number
+        total:
+          type: number
+        paid:
+          type: number
+          description: Nominal uang yang dibayar melalui metode pembayaran terpilih, tidak termasuk poin yang digunakan.
+        change:
+          type: number
+          description: Sisa kembalian tunai setelah poin pembayaran dan poin kembalian dihitung.
+        points_to_member:
+          type: integer
+        points_redeemed:
+          type: integer
+          description: Poin member yang terpakai untuk pembayaran transaksi.
+        payment_method:
+          type: string
+        status:
+          type: string
+        transaction_date:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            type: object
+        sale_promos:
+          type: array
+          description: Promo yang diterapkan beserta discount_amount.
+          items:
+            type: object
+            properties:
+              promo_id:
+                type: integer
+              discount_amount:
+                type: number
+    SaleResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Sale'
+    PagedMembersResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    BusinessApplicationRequest:
+      type: object
+      required: [business_name, business_type]
+      properties:
+        business_name:
+          type: string
+          maxLength: 150
+        business_type:
+          type: string
+          maxLength: 100
+        phone:
+          type: [string, 'null']
+          maxLength: 30
+        address:
+          type: [string, 'null']
+          maxLength: 1000
+        outlet_name:
+          type: [string, 'null']
+          maxLength: 150
+        outlet_address:
+          type: [string, 'null']
+          maxLength: 1000
+    BusinessApplication:
+      type: object
+      properties:
+        id:
+          type: integer
+        applicant_id:
+          type: integer
+        business_name:
+          type: string
+        business_type:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        business_id:
+          type: [integer, 'null']
+        review_note:
+          type: [string, 'null']
+        created_at:
+          type: string
+          format: date-time
+    BusinessApplicationResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/BusinessApplication'
+    BusinessApplicationsListResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              oneOf:
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/BusinessApplication'
+                - type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/BusinessApplication'
+                    pagination:
+                      $ref: '#/components/schemas/Page'
+    BusinessOptionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  outlet_id:
+                    type: [integer, 'null']
+                  outlet_name:
+                    type: [string, 'null']
+    CashierRequest:
+      type: object
+      required: [name, email, phone, password, password_confirmation]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 7
+          maxLength: 30
+        password:
+          type: string
+          minLength: 8
+        password_confirmation:
+          type: string
+        outlet_id:
+          type: [integer, 'null']
+    CashierUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        phone:
+          type: string
+          minLength: 7
+          maxLength: 30
+        outlet_id:
+          type: integer
+    CashierListResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/User'
+                      - type: object
+                        properties:
+                          point_balance:
+                            type: integer
+                          outlet_name:
+                            type: [string, 'null']
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    MemberLookupResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                found:
+                  type: boolean
+                business_id:
+                  type: integer
+                member:
+                  type: [object, 'null']
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    points:
+                      type: integer
+    BusinessDirectoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/Business'
+                      - type: object
+                        properties:
+                          active_products_count:
+                            type: integer
+                          active_outlets_count:
+                            type: integer
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    BusinessDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                business:
+                  $ref: '#/components/schemas/Business'
+                outlets:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Outlet'
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      selling_price:
+                        type: number
+                      stock_by_outlet:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            outlet_id:
+                              type: integer
+                            stock:
+                              type: integer
+                promotions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Promotion'
+    MemberCouponsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      business_id:
+                        type: integer
+                      code:
+                        type: string
+                      discount_value:
+                        type: number
+                      min_transaction:
+                        type: number
+                      status:
+                        type: string
+                        enum: [active, redeemed, expired]
+                      expires_at:
+                        type: string
+                        format: date-time
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    MemberWalletResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                balance:
+                  type: integer
+                transactions:
+                  type: array
+                  items:
+                    type: object
+    MemberNotificationsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                unread_count:
+                  type: integer
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      type:
+                        type: string
+                      title:
+                        type: string
+                      message:
+                        type: string
+                      read_at:
+                        type: [string, 'null']
+                        format: date-time
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    Page:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+    PagedPromotionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Promotion'
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    PagedProductsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Product'
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    PagedOutletsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Outlet'
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    PagedInventoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Inventory'
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    PagedCustomersResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Customer'
+                pagination:
+                  $ref: '#/components/schemas/Page'
+    PagedSalesResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessEnvelope'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Sale'
+                pagination:
+                  $ref: '#/components/schemas/Page'

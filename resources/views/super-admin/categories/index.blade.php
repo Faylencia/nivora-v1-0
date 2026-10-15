@@ -3,53 +3,40 @@
 @section('title', 'Kategori - Super Admin Nivora')
 
 @section('content')
-    @php
-        $categories = [
-            ['name' => 'Makanan', 'description' => 'Produk makanan dan camilan', 'products' => 184],
-            ['name' => 'Minuman', 'description' => 'Minuman dingin dan hangat', 'products' => 96],
-            ['name' => 'Fashion', 'description' => 'Pakaian dan aksesori', 'products' => 74],
-        ];
-    @endphp
-
-    <div class="space-y-6">
-        <x-page-header eyebrow="SUPER ADMIN / KATEGORI" title="Kategori" description="Kelola kategori yang tersedia di platform Nivora.">
-            <x-button href="{{ route('super-admin.categories.create') }}" type="primary">Tambah kategori</x-button>
+    <div class="space-y-6" data-super-admin-categories>
+        <x-page-header eyebrow="SUPER ADMIN / KATEGORI" title="Kategori produk" description="Kelola kategori umum yang dapat digunakan oleh toko di platform Nivora.">
+            <button type="button" data-open-modal="category-create-modal" class="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#536dfe] to-[#687eff] px-4 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(83,109,254,0.24)] transition duration-200 hover:-translate-y-0.5 hover:from-[#435ce7] hover:to-[#596ff5] hover:shadow-[0_12px_24px_rgba(83,109,254,0.3)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/20"><svg viewBox="0 0 24 24" class="h-4 w-4 transition group-hover:rotate-90" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Tambah Kategori</button>
         </x-page-header>
 
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-            <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div class="w-full max-w-md rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                    <input type="text" placeholder="Search category" class="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400" />
-                </div>
-            </div>
+        <div data-admin-categories-message class="hidden rounded-2xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-left text-sm text-slate-700">
-                    <thead>
-                        <tr class="border-b border-slate-200">
-                            <th class="pb-3 pr-4 font-medium">Name</th>
-                            <th class="pb-3 pr-4 font-medium">Description</th>
-                            <th class="pb-3 pr-4 font-medium">Products</th>
-                            <th class="pb-3 text-right font-medium">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($categories as $category)
-                            <tr class="border-b border-slate-100">
-                                <td class="py-3 pr-4 font-medium text-slate-900">{{ $category['name'] }}</td>
-                                <td class="py-3 pr-4">{{ $category['description'] }}</td>
-                                <td class="py-3 pr-4">{{ $category['products'] }}</td>
-                                <td class="py-3 text-right">
-                                    <div class="flex justify-end gap-2">
-                                        <a href="{{ route('super-admin.categories.edit', ['category' => 1]) }}" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-[#687EFF]/30 hover:text-[#687EFF]">Edit</a>
-                                        <button type="button" class="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-medium text-rose-600">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <section class="overflow-hidden rounded-[26px] border border-[#e6eaff] bg-white shadow-[0_18px_50px_rgba(49,67,130,0.07)]">
+            <div class="flex flex-col gap-3 border-b border-[#edf0fb] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"><div><div class="flex items-center gap-2"><h2 class="text-lg font-semibold tracking-tight text-[#20284a]">Semua kategori</h2><span class="rounded-full bg-[#eef1ff] px-2.5 py-1 text-xs font-semibold text-[#536dfe]">{{ number_format($categories->total(), 0, ',', '.') }} kategori</span></div><p class="mt-1 text-sm text-[#7b8299]">Kategori umum tersedia untuk produk di semua toko.</p></div></div>
+            @if ($categories->isEmpty())
+                <div class="p-12 text-center"><div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f0f2ff] text-[#687eff]"><svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11l9 9-7 7-9-9V5.5Z"/><circle cx="7.5" cy="7.5" r=".7" fill="currentColor"/></svg></div><p class="mt-3 font-semibold text-[#303858]">Belum ada kategori</p><p class="mt-1 text-sm text-[#7b8299]">Tambahkan kategori umum agar toko dapat menggunakannya pada produk.</p><button type="button" data-open-modal="category-create-modal" class="mt-4 inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#536dfe] px-4 text-sm font-semibold text-white transition hover:bg-[#435ce7]"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Tambah kategori</button></div>
+            @else
+                <div class="overflow-x-auto"><table class="min-w-[760px] w-full text-left"><thead class="bg-[#f8f9fe] text-[11px] font-bold uppercase tracking-[0.1em] text-[#8a91a9]"><tr><th class="px-6 py-3.5">Kategori</th><th class="px-4 py-3.5">Deskripsi</th><th class="px-4 py-3.5">Produk</th><th class="px-6 py-3.5 text-right">Aksi</th></tr></thead><tbody class="divide-y divide-[#edf0f8]">
+                    @foreach ($categories as $category)
+                        <tr class="transition hover:bg-[#fafbff]"><td class="px-6 py-4"><div class="flex items-center gap-3"><span class="category-avatar flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#e8edff] to-[#dff5ff] text-[#596ee6]"><svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11l9 9-7 7-9-9V5.5Z"/><circle cx="7.5" cy="7.5" r=".7" fill="currentColor"/></svg></span><span><span class="block text-sm font-semibold text-[#283052]">{{ $category->name }}</span><span class="mt-0.5 block text-xs text-[#8a91a9]">{{ $category->business_id ? 'Kategori toko · '.$category->business?->name : 'Kategori umum platform' }}</span></span></div></td><td class="max-w-[440px] px-4 py-4 text-sm text-[#66708d]">{{ $category->description ?: 'Belum ada deskripsi' }}</td><td class="px-4 py-4"><span class="category-product-count inline-flex rounded-full bg-[#f2f4fa] px-2.5 py-1 text-xs font-semibold text-[#59617d]">{{ number_format($category->products_count, 0, ',', '.') }} produk</span></td><td class="px-6 py-4 text-right"><div class="flex justify-end gap-2"><button type="button" data-edit-category="{{ $category->id }}" data-category-name="{{ $category->name }}" data-category-description="{{ $category->description }}" class="group inline-flex items-center gap-1.5 rounded-xl border border-[#e3e8f6] bg-white px-3 py-2 text-xs font-semibold text-[#58617f] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b8c4ff] hover:bg-[#f7f8ff] hover:text-[#536dfe] hover:shadow-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/15"><svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/></svg>Edit</button><button type="button" data-delete-category="{{ $category->id }}" data-category-name="{{ $category->name }}" class="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3 py-2 text-xs font-semibold text-rose-600 transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-500/15"><svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Hapus</button></div></td></tr>
+                    @endforeach
+                </tbody></table></div>
+                <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#edf0fb] bg-[#fcfcff] px-5 py-3.5 sm:px-6"><p class="text-xs font-medium text-[#737b96]">Menampilkan {{ $categories->firstItem() }}–{{ $categories->lastItem() }} dari {{ number_format($categories->total(), 0, ',', '.') }} kategori</p><div>{{ $categories->links() }}</div></div>
+            @endif
+        </section>
     </div>
+
+    @foreach (['create' => 'Tambah kategori', 'edit' => 'Edit kategori'] as $mode => $title)
+        <div id="category-{{ $mode }}-modal" class="fixed inset-0 z-[100] hidden items-center justify-center overflow-y-auto bg-[#101633]/55 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="category-{{ $mode }}-title">
+            <button type="button" data-close-modal="category-{{ $mode }}-modal" class="absolute inset-0 h-full w-full cursor-default" aria-label="Tutup dialog"></button>
+            <section class="relative z-10 my-auto w-full max-w-xl overflow-hidden rounded-[28px] bg-white shadow-[0_30px_100px_rgba(15,23,60,0.3)]">
+                <div class="relative flex items-center justify-between gap-4 border-b border-[#edf0fb] px-6 py-5 sm:px-7"><span class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#536dfe] via-[#8293ff] to-[#54c8e8]"></span><div class="flex items-center gap-4"><span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#536dfe] to-[#8190ff] text-white shadow-lg shadow-[#536dfe]/20"><svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11l9 9-7 7-9-9V5.5Z"/><circle cx="7.5" cy="7.5" r=".7" fill="currentColor"/></svg></span><div><p class="text-xs font-bold uppercase tracking-[0.16em] text-[#687eff]">Pengelolaan kategori</p><h2 id="category-{{ $mode }}-title" class="mt-1 text-xl font-semibold tracking-tight text-[#20284a]">{{ $title }}</h2><p class="mt-1 text-sm text-[#7b8299]">Kategori umum untuk seluruh toko di platform.</p></div></div><button type="button" data-close-modal="category-{{ $mode }}-modal" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#f4f6fc] text-lg text-[#68708b] transition hover:rotate-90 hover:bg-[#e9edfa] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/15" aria-label="Tutup">×</button></div>
+                <form data-super-admin-category-{{ $mode }} class="grid gap-4 p-6 sm:p-7">
+                    <div data-admin-category-message class="hidden rounded-xl border px-4 py-3 text-sm" role="alert" aria-live="assertive"></div>
+                    <label class="space-y-1.5 text-xs font-semibold text-[#59617d]">Nama kategori<input name="name" required maxlength="100" placeholder="Contoh: Makanan & Minuman" class="min-h-11 w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] px-3.5 text-sm font-normal text-[#20284a] outline-none transition placeholder:text-[#a1a8bc] focus:border-[#8697ff] focus:bg-white focus:ring-4 focus:ring-[#536dfe]/10"></label>
+                    <label class="space-y-1.5 text-xs font-semibold text-[#59617d]">Deskripsi <span class="font-normal text-[#8a91a9]">(opsional)</span><textarea name="description" rows="3" maxlength="2000" placeholder="Jelaskan jenis produk dalam kategori ini" class="w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] px-3.5 py-3 text-sm font-normal text-[#20284a] outline-none transition placeholder:text-[#a1a8bc] focus:border-[#8697ff] focus:bg-white focus:ring-4 focus:ring-[#536dfe]/10"></textarea></label>
+                    <div class="mt-1 flex flex-col-reverse gap-2 border-t border-[#edf0fb] pt-5 sm:flex-row sm:justify-end"><button type="button" data-close-modal="category-{{ $mode }}-modal" class="min-h-11 rounded-xl border border-[#e4e8f4] bg-white px-4 text-sm font-semibold text-[#59617d] transition hover:-translate-y-0.5 hover:border-[#cbd3e8] hover:bg-[#f8f9fd] hover:shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/15">Batal</button><button type="submit" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#536dfe] to-[#687eff] px-5 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(83,109,254,0.2)] transition hover:-translate-y-0.5 hover:from-[#435ce7] hover:to-[#596ff5] hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/20 disabled:cursor-wait disabled:opacity-60"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>{{ $mode === 'create' ? 'Simpan kategori' : 'Simpan perubahan' }}</button></div>
+                </form>
+            </section>
+        </div>
+    @endforeach
 @endsection

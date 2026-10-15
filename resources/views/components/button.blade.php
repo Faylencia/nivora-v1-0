@@ -3,6 +3,7 @@
     'size' => 'md',
     'href' => null,
     'variant' => 'solid',
+    'buttonType' => 'button',
 ])
 
 @php
@@ -31,7 +32,7 @@
         {{ $slot }}
     </a>
 @else
-    <button {{ $attributes->merge(['class' => $classes, 'type' => 'button']) }}>
+    <button type="{{ $buttonType }}" {{ $attributes->merge(['class' => $classes]) }}>
         {{ $slot }}
     </button>
 @endif

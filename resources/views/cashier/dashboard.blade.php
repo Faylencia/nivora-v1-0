@@ -1,71 +1,31 @@
 @extends('layouts.cashier')
 
-@section('title', 'Cashier Dashboard - Nivora')
+@section('title', 'Dashboard Kasir - Nivora')
 
 @section('content')
-    @php
-        $stats = [
-            ['label' => 'Transaksi Hari Ini', 'value' => '128', 'detail' => '+12% vs kemarin'],
-            ['label' => 'Total Penjualan Hari Ini', 'value' => 'Rp 8.450.000', 'detail' => 'Target hari ini'],
-            ['label' => 'Produk Terjual', 'value' => '342', 'detail' => 'Unit'],
-            ['label' => 'Transaksi Selesai', 'value' => '119', 'detail' => '90% selesai'],
-        ];
-
-        $recentSales = [
-            ['invoice' => '#NV-2048', 'customer' => 'Budi', 'total' => 'Rp 160.000', 'method' => 'Cash', 'status' => 'Completed'],
-            ['invoice' => '#NV-2047', 'customer' => 'Sinta', 'total' => 'Rp 82.000', 'method' => 'QRIS', 'status' => 'Completed'],
-            ['invoice' => '#NV-2046', 'customer' => 'Rafi', 'total' => 'Rp 245.000', 'method' => 'Cash', 'status' => 'Completed'],
-        ];
-    @endphp
-
-    <div class="space-y-6">
-        <x-page-header eyebrow="CASHIER" title="Dashboard kasir" description="Kelola transaksi dan pantau aktivitas penjualan toko dengan mudah.">
-            <span class="rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm text-[#5e647f]">Outlet aktif: Bandung Center</span>
-            <span class="rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm text-[#5e647f]">{{ now()->translatedFormat('d M Y') }}</span>
-            <x-button href="{{ route('home') }}" type="primary">Logout</x-button>
+    <div class="cashier-dashboard space-y-6" data-live-dashboard>
+        <x-page-header eyebrow="CASHIER" title="Dashboard kasir" description="Ringkasan transaksi dan produk dari data bisnis Anda.">
+            <a href="{{ route('cashier.pos') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#687EFF] px-4 text-sm font-semibold text-white">Buka POS</a>
         </x-page-header>
-
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            @foreach ($stats as $stat)
-                <div class="ni-stat-card">
-                    <p class="text-sm text-[#5e647f]">{{ $stat['label'] }}</p>
-                    <p class="mt-4 text-2xl font-semibold tracking-tighter text-[#1f2544]">{{ $stat['value'] }}</p>
-                    <p class="mt-2 text-xs text-[#687EFF]">{{ $stat['detail'] }}</p>
-                </div>
-            @endforeach
-        </div>
-
-        <div class="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-            <div class="rounded-[28px] border border-[#e7ebff] bg-white p-5 shadow-sm">
-                <h2 class="text-xl font-semibold text-[#1f2544]">Quick Action</h2>
-                <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                    <a href="{{ route('cashier.pos') }}" class="rounded-2xl bg-[#687EFF] p-4 text-left text-white shadow-sm">Mulai Transaksi</a>
-                    <a href="{{ route('cashier.sales') }}" class="rounded-2xl border border-[#e7ebff] bg-[#f7f9ff] p-4 text-left text-[#1f2544]">Lihat Transaksi</a>
-                    <a href="{{ route('cashier.products') }}" class="rounded-2xl border border-[#e7ebff] bg-[#f7f9ff] p-4 text-left text-[#1f2544]">Produk</a>
-                    <a href="{{ route('cashier.customers') }}" class="rounded-2xl border border-[#e7ebff] bg-[#f7f9ff] p-4 text-left text-[#1f2544]">Customer</a>
-                </div>
+        <div data-live-message class="hidden rounded-2xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+        <section class="ni-panel relative overflow-hidden bg-[linear-gradient(115deg,#1f2544_0%,#414f9f_58%,#687eff_100%)] p-6 text-white sm:p-8">
+            <div class="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <div><p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#b6fffa]">Aktivitas kasir</p><h2 class="mt-2 text-2xl font-semibold sm:text-3xl">Siap melayani transaksi hari ini?</h2><p class="mt-2 max-w-2xl text-sm leading-6 text-white/75">Pantau hasil penjualan, transaksi yang diproses, dan ketersediaan produk.</p></div>
+                <a href="{{ route('cashier.pos') }}" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-[#414f9f]">Mulai transaksi <span class="ml-2" aria-hidden="true">→</span></a>
             </div>
-
-            <div class="rounded-[28px] border border-[#e7ebff] bg-white p-5 shadow-sm">
-                <div class="mb-5 flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-[#1f2544]">Transaksi terbaru</h2>
-                    <a href="{{ route('cashier.sales') }}" class="text-sm font-medium text-[#687EFF]">Lihat semua</a>
-                </div>
-                <div class="space-y-3">
-                    @foreach ($recentSales as $sale)
-                        <div class="flex items-center justify-between gap-3 rounded-2xl border border-[#eef3ff] bg-[#f7f9ff] p-3">
-                            <div>
-                                <p class="font-medium text-[#1f2544]">{{ $sale['invoice'] }}</p>
-                                <p class="text-xs text-[#5e647f]">{{ $sale['customer'] }} · {{ $sale['method'] }}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-[#1f2544]">{{ $sale['total'] }}</p>
-                                <span class="inline-flex rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-600">{{ $sale['status'] }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
+            <div class="pointer-events-none absolute -right-8 -top-24 h-64 w-64 rounded-full border-[36px] border-white/10"></div>
+        </section>
+        <div data-dashboard-loading class="ni-panel p-4 text-center text-sm text-[#5e647f]"><span class="inline-flex items-center gap-2"><span class="h-2 w-2 animate-pulse rounded-full bg-[#687EFF]"></span>Memuat ringkasan…</span></div>
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Penjualan hari ini</p><p data-dashboard-stat="today_sales" class="mt-2 text-3xl font-semibold">—</p><p class="mt-2 text-xs text-[#7b8299]">Total transaksi selesai</p></article>
+            <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Transaksi hari ini</p><p data-dashboard-stat="today_transactions" class="mt-2 text-3xl font-semibold">—</p><p class="mt-2 text-xs text-[#7b8299]">Transaksi yang Anda proses</p></article>
+            <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Produk aktif</p><p data-dashboard-stat="active_products" class="mt-2 text-3xl font-semibold">—</p><p class="mt-2 text-xs text-[#7b8299]">Produk yang tersedia untuk dijual</p></article>
+            <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Stok mencapai batas minimum</p><p data-dashboard-stat="low_stock_items" class="mt-2 text-3xl font-semibold">—</p><p class="mt-2 text-xs text-[#7b8299]">Perhatikan ketersediaan produk</p></article>
         </div>
+        <section class="ni-panel overflow-hidden">
+            <div class="flex items-center justify-between gap-3 border-b border-[#e7ebff] p-5"><div><h2 class="text-lg font-semibold">Transaksi terbaru</h2><p class="mt-1 text-sm text-[#5e647f]">Transaksi yang diproses oleh akun kasir ini.</p></div><a href="{{ route('cashier.sales') }}" class="text-sm font-semibold text-[#687EFF]">Riwayat transaksi</a></div>
+            <div data-dashboard-empty class="hidden p-8 text-center"><p class="font-semibold">Belum ada transaksi.</p><p class="mt-1 text-sm text-[#5e647f]">Transaksi yang dibuat melalui POS akan muncul di sini.</p></div>
+            <div data-dashboard-table-wrap class="hidden overflow-x-auto"><table class="ni-table"><thead><tr><th>Invoice</th><th>Customer</th><th>Tanggal</th><th>Total</th><th>Status</th></tr></thead><tbody data-dashboard-recent></tbody></table></div>
+        </section>
     </div>
 @endsection

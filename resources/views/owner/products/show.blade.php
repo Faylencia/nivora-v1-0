@@ -1,71 +1,32 @@
 @extends('layouts.owner')
 
-@section('title', 'Product Detail - Nivora')
+@section('title', 'Detail Produk - Nivora')
 
 @section('content')
-    @php
-        $product = [
-            'name' => 'Kopi Susu Signature',
-            'sku' => 'KS-001',
-            'category' => 'Minuman',
-            'purchase_price' => 15000,
-            'selling_price' => 18000,
-            'description' => 'Kopi susu lembut dengan aroma khas dan tekstur creamy, cocok untuk pelanggan yang menyukai rasa kopi yang halus.',
-            'stock' => 24,
-            'status' => 'Active',
-            'business' => 'Kopi Tuku',
-        ];
-    @endphp
-
-    <div class="mx-auto max-w-5xl">
-        <x-page-header eyebrow="OWNER / PRODUK" title="Detail produk" description="Tinjau informasi, harga, dan ketersediaan produk.">
-            <x-button href="{{ route('owner.products.index') }}" type="ghost">Back</x-button>
+    <div class="product-crud-surface space-y-6" data-product-detail="{{ $product }}">
+        <x-page-header eyebrow="OWNER / PRODUK" title="Detail produk" description="Rincian produk dan catatan stok yang tersimpan.">
+            <a href="{{ route('owner.products.index') }}" data-go-back class="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#e7ebff] bg-white px-4 text-sm font-medium text-[#5e647f]"><span aria-hidden="true">←</span> Kembali ke produk</a>
+            <a href="{{ route('owner.products.index', ['edit' => $product]) }}" class="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#687EFF] px-4 text-sm font-semibold text-white">Edit produk</a>
         </x-page-header>
-
-        <div class="overflow-hidden rounded-[30px] border border-[#e7ebff] bg-white/90 shadow-[0_22px_50px_rgba(31,37,68,0.05)]">
-            <div class="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
-                <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=1200&q=80" alt="{{ $product['name'] }}" class="h-full w-full object-cover" />
-
-                <div class="p-6 sm:p-8">
-                    <div class="mb-3 inline-flex rounded-full bg-[#eef3ff] px-2.5 py-1 text-xs font-medium text-[#687EFF]">{{ $product['category'] }}</div>
-                    <h2 class="text-3xl font-semibold text-[#1f2544]">{{ $product['name'] }}</h2>
-
-                    <div class="mt-5 grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-2xl bg-[#f7f9ff] p-4">
-                            <p class="text-sm text-[#5e647f]">SKU</p>
-                            <p class="mt-2 text-base font-semibold text-[#1f2544]">{{ $product['sku'] }}</p>
-                        </div>
-                        <div class="rounded-2xl bg-[#f7f9ff] p-4">
-                            <p class="text-sm text-[#5e647f]">Status</p>
-                            <p class="mt-2 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-600">{{ $product['status'] }}</p>
-                        </div>
-                        <div class="rounded-2xl bg-[#f7f9ff] p-4">
-                            <p class="text-sm text-[#5e647f]">Purchase price</p>
-                            <p class="mt-2 text-base font-semibold text-[#1f2544]">Rp {{ number_format($product['purchase_price'], 0, ',', '.') }}</p>
-                        </div>
-                        <div class="rounded-2xl bg-[#f7f9ff] p-4">
-                            <p class="text-sm text-[#5e647f]">Selling price</p>
-                            <p class="mt-2 text-base font-semibold text-[#1f2544]">Rp {{ number_format($product['selling_price'], 0, ',', '.') }}</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 rounded-2xl bg-[#f7f9ff] p-4">
-                        <p class="text-sm text-[#5e647f]">Description</p>
-                        <p class="mt-2 text-sm leading-6 text-[#5e647f]">{{ $product['description'] }}</p>
-                    </div>
-
-                    <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-2xl bg-[#f7f9ff] p-4">
-                            <p class="text-sm text-[#5e647f]">Stock</p>
-                            <p class="mt-2 text-base font-semibold text-[#1f2544]">{{ $product['stock'] }} pcs</p>
-                        </div>
-                        <div class="rounded-2xl bg-[#f7f9ff] p-4">
-                            <p class="text-sm text-[#5e647f]">Business</p>
-                            <p class="mt-2 text-base font-semibold text-[#1f2544]">{{ $product['business'] }}</p>
-                        </div>
+        <div data-entity-loading class="ni-panel p-8 text-center text-sm text-[#5e647f]">Memuat detail produk…</div>
+        <div data-product-content class="hidden space-y-5">
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Harga modal</p><p data-product-purchase-price class="mt-2 text-xl font-semibold">—</p></article>
+                <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Harga jual</p><p data-product-selling-price class="mt-2 text-xl font-semibold">—</p></article>
+                <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Kategori</p><p data-product-category-name class="mt-2 text-xl font-semibold">—</p></article>
+                <article class="ni-stat-card"><p class="text-sm text-[#5e647f]">Status</p><p data-product-status class="mt-2"></p></article>
+            </div>
+            <section class="ni-panel overflow-hidden">
+                <div class="grid md:grid-cols-[240px_minmax(0,1fr)]">
+                    <div class="relative flex min-h-56 items-center justify-center border-b border-[#e7ebff] bg-[#f7f9ff] p-5 md:border-b-0 md:border-r"><img data-product-photo alt="Foto produk" class="hidden h-48 w-full rounded-2xl object-contain"><span data-product-photo-empty class="product-photo-placeholder flex h-28 w-28 items-center justify-center rounded-3xl border border-[#dfe6ff] bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-14 w-14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m4 7 8-4 8 4v10l-8 4-8-4V7Z"/><path d="m4 7 8 4 8-4M12 11v10"/></svg></span></div>
+                    <div class="p-5 sm:p-7">
+                        <p class="ni-section-label">PRODUK</p><h1 data-product-name class="mt-2 text-2xl font-semibold text-[#1f2544]"></h1>
+                        <p data-product-description class="mt-3 whitespace-pre-line text-sm leading-6 text-[#5e647f]"></p>
+                        <dl class="mt-5 grid gap-4 border-t border-[#e7ebff] pt-5 sm:grid-cols-3"><div><dt class="text-xs text-[#5e647f]">SKU</dt><dd data-product-sku class="mt-1 font-medium"></dd></div><div><dt class="text-xs text-[#5e647f]">Barcode</dt><dd data-product-barcode class="mt-1 font-medium"></dd></div><div><dt class="text-xs text-[#5e647f]">Satuan</dt><dd data-product-unit class="mt-1 font-medium"></dd></div></dl>
                     </div>
                 </div>
-            </div>
+            </section>
+            <section class="ni-panel p-5 sm:p-7"><h2 class="font-semibold text-[#1f2544]">Stok toko</h2><div data-product-inventories class="mt-4 space-y-2"></div></section>
         </div>
     </div>
 @endsection

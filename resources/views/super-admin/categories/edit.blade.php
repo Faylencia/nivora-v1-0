@@ -3,22 +3,16 @@
 @section('title', 'Edit Kategori - Super Admin Nivora')
 
 @section('content')
-    <div class="mx-auto max-w-3xl">
-        <x-page-header eyebrow="SUPER ADMIN / KATEGORI" title="Edit kategori" description="Perbarui informasi kategori platform." />
-
-        <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <form class="space-y-5">
-                <x-input label="Name" name="name" value="Minuman" required />
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">Description</label>
-                    <textarea rows="4" class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-sm transition focus:border-[#687EFF] focus:outline-none focus:ring-4 focus:ring-[#687EFF]/10">Minuman dingin dan hangat untuk kebutuhan pelanggan sehari-hari.</textarea>
-                </div>
-
-                <div class="flex flex-col gap-3 pt-2 sm:flex-row">
-                    <x-button type="primary" size="lg">Update category</x-button>
-                    <x-button href="{{ route('super-admin.categories.index') }}" type="ghost" size="lg">Batal</x-button>
-                </div>
+    <div class="mx-auto max-w-3xl space-y-6">
+        <x-page-header eyebrow="SUPER ADMIN / KATEGORI" title="Edit kategori" description="Perbarui nama dan deskripsi kategori produk." />
+        <section class="overflow-hidden rounded-[28px] border border-[#e6eaff] bg-white shadow-[0_18px_50px_rgba(49,67,130,0.07)]">
+            <div class="relative flex items-center gap-4 border-b border-[#edf0fb] px-6 py-5 sm:px-7"><span class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#536dfe] via-[#8293ff] to-[#54c8e8]"></span><span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eef1ff] text-[#596ee6]"><svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.1 2.1 0 0 0-3-3l-11 11L4 20Z"/><path d="M4 20h5"/></svg></span><div><p class="text-xs font-bold uppercase tracking-[0.16em] text-[#687eff]">Pengaturan kategori</p><h2 class="mt-1 text-xl font-semibold tracking-tight text-[#20284a]">{{ $category->name }}</h2><p class="mt-1 text-sm text-[#7b8299]">Kategori {{ $category->business_id ? 'khusus toko' : 'umum platform' }} · {{ number_format($category->products_count ?? $category->products()->count(), 0, ',', '.') }} produk</p></div></div>
+            <form data-super-admin-category-edit="{{ $category->id }}" class="grid gap-5 p-6 sm:p-7">
+                <div data-admin-category-message class="hidden rounded-xl border px-4 py-3 text-sm" role="alert" aria-live="assertive"></div>
+                <label class="space-y-1.5 text-xs font-semibold text-[#59617d]">Nama kategori<input name="name" value="{{ $category->name }}" required maxlength="100" placeholder="Contoh: Makanan & Minuman" class="min-h-11 w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] px-3.5 text-sm font-normal text-[#20284a] outline-none transition placeholder:text-[#a1a8bc] focus:border-[#8697ff] focus:bg-white focus:ring-4 focus:ring-[#536dfe]/10"></label>
+                <label class="space-y-1.5 text-xs font-semibold text-[#59617d]">Deskripsi <span class="font-normal text-[#8a91a9]">(opsional)</span><textarea name="description" rows="4" maxlength="2000" placeholder="Jelaskan jenis produk dalam kategori ini" class="w-full rounded-xl border border-[#e4e8f4] bg-[#fafbff] px-3.5 py-3 text-sm font-normal text-[#20284a] outline-none transition placeholder:text-[#a1a8bc] focus:border-[#8697ff] focus:bg-white focus:ring-4 focus:ring-[#536dfe]/10">{{ $category->description }}</textarea></label>
+                <div class="flex flex-col-reverse gap-2 border-t border-[#edf0fb] pt-5 sm:flex-row sm:justify-end"><a href="{{ route('super-admin.categories.index') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#e4e8f4] bg-white px-4 text-sm font-semibold text-[#59617d] transition hover:-translate-y-0.5 hover:border-[#cbd3e8] hover:bg-[#f8f9fd] hover:shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/15">Batal</a><button type="submit" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#536dfe] to-[#687eff] px-5 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(83,109,254,0.2)] transition hover:-translate-y-0.5 hover:from-[#435ce7] hover:to-[#596ff5] hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#536dfe]/20 disabled:cursor-wait disabled:opacity-60"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>Simpan perubahan</button></div>
             </form>
-        </div>
+        </section>
     </div>
 @endsection

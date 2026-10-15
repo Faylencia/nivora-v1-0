@@ -2,10 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\Business;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CashierAccessTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_cashier_dashboard_routes_are_available(): void
     {
         $this->get(route('cashier.dashboard'))
@@ -15,7 +20,10 @@ class CashierAccessTest extends TestCase
             ->assertDontSee('Business')
             ->assertDontSee('AI');
 
-        $this->get(route('cashier.pos'))->assertOk();
+        $this->get(route('cashier.pos'))
+            ->assertOk()
+            ->assertSee('data-go-back', false)
+            ->assertSee(route('cashier.dashboard'), false);
         $this->get(route('cashier.sales'))->assertOk();
     }
 
@@ -24,7 +32,7 @@ class CashierAccessTest extends TestCase
         $this->get(route('super-admin.dashboard'))
             ->assertOk()
             ->assertSee('Super Admin')
-            ->assertSee('Tambah Toko')
+            ->assertSee('Tinjau pengajuan toko')
             ->assertSee('Admin Toko')
             ->assertDontSee('Membership')
             ->assertDontSee('POS / Kasir');
@@ -33,11 +41,16 @@ class CashierAccessTest extends TestCase
             ->assertOk()
             ->assertSee('Admin Toko')
             ->assertSee('Toko Saya')
+            ->assertSee('space-y-0.5 overflow-y-auto', false)
+            ->assertDontSee('scrollbar-hidden', false)
             ->assertDontSee('Super Admin');
     }
 
     public function test_management_routes_are_renderable(): void
     {
+        $business = Business::factory()->create();
+        $admin = User::factory()->create();
+
         foreach ([
             'super-admin.stores',
             'super-admin.stores.create',
@@ -49,10 +62,18 @@ class CashierAccessTest extends TestCase
             'super-admin.store-admins.edit',
         ] as $routeName) {
             $parameters = str_contains($routeName, '.show') || str_contains($routeName, '.edit')
-                ? ['store' => 1, 'admin' => 1]
+                ? ['store' => $business->id, 'admin' => $admin->id]
                 : [];
 
-            $this->get(route($routeName, $parameters))->assertOk();
+            $response = $this->get(route($routeName, $parameters));
+
+            if (in_array($routeName, ['super-admin.stores.create', 'super-admin.store-admins.create'], true)) {
+                $response->assertRedirect(route('super-admin.business-applications'));
+
+                continue;
+            }
+
+            $response->assertOk();
         }
     }
 }
