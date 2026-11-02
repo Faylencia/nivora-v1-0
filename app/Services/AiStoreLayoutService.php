@@ -109,7 +109,7 @@ final class AiStoreLayoutService
 
         $rackObjects = array_values(array_filter(
             $plan,
-            fn (array $object): bool => in_array($object['type'], ['wall_rack', 'mid_rack', 'storage', 'stockroom'], true),
+            fn (array $object): bool => in_array(($object['type'] ?? ''), ['wall_rack', 'mid_rack', 'storage', 'stockroom'], true),
         ));
         $rackCount = count($rackObjects);
 
@@ -117,14 +117,14 @@ final class AiStoreLayoutService
             for ($rightIndex = $leftIndex + 1; $rightIndex < $rackCount; $rightIndex++) {
                 $first = $rackObjects[$leftIndex];
                 $second = $rackObjects[$rightIndex];
-                $firstX = (float) $first['x'];
-                $firstY = (float) $first['y'];
-                $secondX = (float) $second['x'];
-                $secondY = (float) $second['y'];
-                $firstWidth = (float) $first['width'];
-                $firstHeight = (float) $first['height'];
-                $secondWidth = (float) $second['width'];
-                $secondHeight = (float) $second['height'];
+                $firstX = (float) ($first['x'] ?? 0);
+                $firstY = (float) ($first['y'] ?? 0);
+                $secondX = (float) ($second['x'] ?? 0);
+                $secondY = (float) ($second['y'] ?? 0);
+                $firstWidth = (float) ($first['width'] ?? 0);
+                $firstHeight = (float) ($first['height'] ?? 0);
+                $secondWidth = (float) ($second['width'] ?? 0);
+                $secondHeight = (float) ($second['height'] ?? 0);
 
                 if ($firstX < $secondX + $secondWidth - 0.001
                     && $secondX < $firstX + $firstWidth - 0.001
@@ -225,19 +225,29 @@ final class AiStoreLayoutService
         }
 
         foreach ($windows as $window) {
-            if ($x < (float) $window['x'] + (float) $window['width'] - 0.001
-                && $x + $width > (float) $window['x'] - 0.001
-                && $y < (float) $window['y'] + (float) $window['height'] - 0.001
-                && $y + $height > (float) $window['y'] - 0.001) {
+            $windowX = (float) ($window['x'] ?? 0);
+            $windowY = (float) ($window['y'] ?? 0);
+            $windowWidth = (float) ($window['width'] ?? 0);
+            $windowHeight = (float) ($window['height'] ?? 0);
+
+            if ($x < $windowX + $windowWidth - 0.001
+                && $x + $width > $windowX - 0.001
+                && $y < $windowY + $windowHeight - 0.001
+                && $y + $height > $windowY - 0.001) {
                 return true;
             }
         }
 
         foreach ($permanentAreas as $area) {
-            if ($x < (float) $area['x'] + (float) $area['width'] - 0.001
-                && $x + $width > (float) $area['x'] - 0.001
-                && $y < (float) $area['y'] + (float) $area['height'] - 0.001
-                && $y + $height > (float) $area['y'] - 0.001) {
+            $areaX = (float) ($area['x'] ?? 0);
+            $areaY = (float) ($area['y'] ?? 0);
+            $areaWidth = (float) ($area['width'] ?? 0);
+            $areaHeight = (float) ($area['height'] ?? 0);
+
+            if ($x < $areaX + $areaWidth - 0.001
+                && $x + $width > $areaX - 0.001
+                && $y < $areaY + $areaHeight - 0.001
+                && $y + $height > $areaY - 0.001) {
                 return true;
             }
         }
