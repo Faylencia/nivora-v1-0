@@ -15,10 +15,11 @@ class AiStoreFloorPlanController extends ApiController
 {
     public function __construct(
         protected readonly AiStoreLayoutService $layout,
-        protected readonly BusinessContext $businessContext,
-        protected readonly PlatformActivityLogger $activityLogger,
     ) {
-        parent::__construct($businessContext, $activityLogger);
+        parent::__construct(
+            app(BusinessContext::class),
+            app(PlatformActivityLogger::class),
+        );
     }
 
     public function index(Request $request): JsonResponse
