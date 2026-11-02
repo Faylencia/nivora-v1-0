@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AiRecommendationController;
+use App\Http\Controllers\Api\AiStoreFloorPlanController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BusinessApplicationController;
 use App\Http\Controllers\Api\BusinessController;
@@ -58,6 +59,7 @@ Route::prefix('v1')->group(function (): void {
             Route::get('ai/recommendations', [AiRecommendationController::class, 'index']);
             Route::post('ai/store-analysis', [StoreAnalysisController::class, 'store']);
             Route::get('ai/store-analysis/{analysis}', [StoreAnalysisController::class, 'show']);
+            Route::apiResource('ai/floor-plans', AiStoreFloorPlanController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
         });
 
         Route::middleware('role:owner,cashier')->group(function (): void {

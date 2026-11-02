@@ -6,6 +6,7 @@
     <div class="space-y-6" data-live-list="recommendations">
         <x-page-header eyebrow="OWNER / AI" title="AI insights" description="Rekomendasi yang sudah tersimpan untuk bisnis Anda.">
             <button type="button" data-ai-generate class="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#687EFF] px-4 text-sm font-semibold text-white transition hover:bg-[#596eea]">Analisis stok sekarang</button>
+            <a href="{{ route('ai.floor-plans') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#dfe7ff] bg-white px-4 text-sm font-semibold text-[#1f2544] transition hover:bg-[#f7f9ff]">Buat denah 2D toko</a>
         </x-page-header>
         <div data-live-message class="hidden rounded-2xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
         <section class="ni-panel overflow-hidden">

@@ -16,7 +16,7 @@
         </x-page-header>
 
         <div data-pos-message class="hidden rounded-2xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
-        <div data-pos-receipt class="hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800" role="status" aria-live="polite"></div>
+        <div data-pos-receipt class="hidden pos-print-receipt rounded-[28px] border border-emerald-200 bg-white p-5 text-sm text-[#1f2544] shadow-sm" role="status" aria-live="polite"></div>
 
         <div class="pos-layout-toolbar flex flex-col gap-3 rounded-2xl border border-[#e6eaff] bg-white/90 p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-4"><div class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eef1ff] text-[#536dfe]"><svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/></svg></span><div><p class="text-sm font-semibold text-[#20284a]">Tata letak kasir</p><p class="text-xs text-[#7b8299]">Atur posisi katalog dan keranjang</p></div></div><div class="pos-layout-options flex w-full gap-1 rounded-xl bg-[#f3f5fc] p-1 sm:w-auto"><button type="button" data-pos-layout-option="products-left" aria-pressed="true" class="pos-layout-option inline-flex min-h-9 flex-1 items-center justify-center gap-2 rounded-lg bg-white px-3 text-xs font-semibold text-[#39436f] shadow-sm transition sm:flex-none"><svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="12" height="16" rx="1.5"/><rect x="17" y="4" width="4" height="16" rx="1"/></svg>Produk kiri · keranjang kanan</button><button type="button" data-pos-layout-option="cart-left" aria-pressed="false" class="pos-layout-option inline-flex min-h-9 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold text-[#858ca4] transition hover:text-[#39436f] sm:flex-none"><svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="4" height="16" rx="1"/><rect x="9" y="4" width="12" height="16" rx="1.5"/></svg>Keranjang kiri · produk kanan</button></div></div>
 
@@ -86,6 +86,29 @@
                 <button type="button" data-pos-checkout class="mt-5 min-h-12 w-full rounded-xl bg-[#687EFF] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#596eea] disabled:cursor-not-allowed disabled:opacity-50">Simpan transaksi</button>
                 <p class="mt-2 text-center text-xs text-[#7b8299]">Harga, stok, syarat promo, dan diskon diverifikasi lagi oleh server.</p>
             </section>
+        </div>
+
+        <div data-pos-confirm-modal class="fixed inset-0 z-50 hidden items-center justify-center bg-[#1f2544]/55 px-4 py-6 backdrop-blur-md">
+            <div class="w-full max-w-lg max-h-[90vh] overflow-hidden rounded-[30px] border border-[#e7ebff] bg-white shadow-[0_28px_80px_rgba(31,37,68,0.16)]">
+                <div class="flex items-start justify-between gap-4 border-b border-[#e7ebff] p-6">
+                    <div>
+                        <p class="ni-section-label">KONFIRMASI PESANAN</p>
+                        <h3 class="mt-1 text-lg font-semibold text-[#1f2544]">Periksa detail sebelum simpan</h3>
+                    </div>
+                    <button type="button" data-pos-confirm-cancel class="rounded-xl p-2 text-[#5e647f] transition hover:bg-[#eef3ff] hover:text-[#1f2544]" aria-label="Tutup konfirmasi">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 18 18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div data-pos-confirm-details class="max-h-[56vh] overflow-y-auto p-6"></div>
+                <div class="border-t border-[#e7ebff] bg-[#f7f9ff] p-6">
+                    <p class="text-base font-semibold text-[#1f2544]">Yakin dengan pesanan ini?</p>
+                    <p class="mt-1 text-xs text-[#7b8299]">Harga, stok, syarat promo, dan diskon diverifikasi lagi oleh server.</p>
+                    <div class="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                        <button type="button" data-pos-confirm-cancel class="min-h-11 rounded-xl border border-[#e7ebff] bg-white px-4 text-sm font-semibold text-[#5e647f]">Batal</button>
+                        <button type="button" data-pos-confirm-submit class="min-h-11 rounded-xl bg-[#687EFF] px-4 text-sm font-semibold text-white">Yakin, simpan transaksi</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

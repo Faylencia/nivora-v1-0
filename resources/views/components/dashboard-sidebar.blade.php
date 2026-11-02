@@ -82,6 +82,7 @@
                 ['label' => 'Laporan', 'icon' => 'credit-card', 'href' => route('owner.payments.index'), 'active' => 'owner.payments.*'],
                 ['label' => 'Kasir & Poin', 'icon' => 'users', 'href' => route('owner.cashiers.index'), 'active' => 'owner.cashiers.*'],
                 ['label' => 'AI Insights', 'icon' => 'sparkles', 'href' => route('owner.ai.index'), 'active' => 'owner.ai.*'],
+                ['label' => 'AI Floor Plan', 'icon' => 'ruler', 'href' => route('owner.ai.floor-plans'), 'active' => 'owner.ai.*'],
                 ['label' => 'Kasir', 'icon' => 'users', 'href' => route('cashier.dashboard'), 'active' => 'cashier.*'],
                 ['label' => 'Pengaturan', 'icon' => 'settings', 'href' => route('owner.settings'), 'active' => 'owner.settings'],
             ],
@@ -162,6 +163,9 @@
                         @break
                     @case('sparkles')
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m12 3 1.2 5.8L19 10l-5.8 1.2L12 17l-1.2-5.8L5 10l5.8-1.2L12 3Zm7 11 .7 3.3L23 18l-3.3.7L19 22l-.7-3.3L15 18l3.3-.7L19 14ZM5 2l.6 2.4L8 5l-2.4.6L5 8l-.6-2.4L2 5l2.4-.6L5 2Z" /></svg>
+                        @break
+                    @case('ruler')
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 9h16M9 4v16" /></svg>
                         @break
                 @endswitch
                 <span>{{ $menu['label'] }}</span>

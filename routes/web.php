@@ -172,6 +172,10 @@ Route::prefix('owner')->name('owner.')->group(function () {
         return view('owner.ai.store-analysis');
     })->name('ai.store-analysis');
 
+    Route::get('/ai/floor-plans', function () {
+        return view('owner.ai.floor-plans');
+    })->name('ai.floor-plans');
+
     Route::get('/cashiers', function () {
         return view('owner.cashiers.index');
     })->name('cashiers.index');

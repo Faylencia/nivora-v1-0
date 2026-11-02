@@ -1222,6 +1222,84 @@ html[data-theme='dark'] .owner-settings .owner-settings-link:hover {
     background: #2d3552;
 }
 
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .pos-print-receipt,
+    .pos-print-receipt * {
+        visibility: visible;
+    }
+
+    .pos-print-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* AI store floor plan. */
+.floor-plan-room {
+    fill: #ffffff;
+    stroke: #1f2544;
+    stroke-width: 0.02;
+}
+
+.floor-plan-room-before {
+    fill: #fff7ed;
+    stroke: #f59e0b;
+    stroke-width: 0.02;
+    stroke-dasharray: 0.08 0.08;
+}
+
+.floor-plan-object {
+    fill-opacity: 0.85;
+    stroke: #1f2544;
+    stroke-width: 0.02;
+    stroke-linejoin: round;
+}
+
+.floor-plan-object-label {
+    font-size: 1.5;
+    font-weight: 600;
+    fill: #1f2544;
+    pointer-events: none;
+}
+
+.floor-plan-object-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 40px;
+    padding: 0.25rem 0.9rem;
+    border-radius: 9999px;
+    border: 1px solid #e7ebff;
+    background: #ffffff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #1f2544;
+}
+
+.floor-plan-object-chip.is-selected {
+    border-color: #687eff;
+    background: #eef1ff;
+}
+
+.floor-plan-object-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 9999px;
+}
+
 /* Owner dashboard, customer, campaign and financial tables. */
 html[data-theme='dark'] .owner-dashboard .ni-table,
 html[data-theme='dark'] .owner-customers .ni-table,

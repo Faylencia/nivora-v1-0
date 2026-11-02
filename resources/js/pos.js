@@ -1,4 +1,4 @@
-import { apiMessage, apiRequest, escapeHtml, formatRupiah, pagedItems, requireSession } from './nivora-api';
+import { apiMessage, apiRequest, escapeHtml, formatRupiah, getSession, pagedItems, requireSession } from './nivora-api';
 
 function initializePos(root) {
     if (!requireSession()) {
@@ -9,6 +9,9 @@ function initializePos(root) {
         alert: root.querySelector('[data-pos-message]'),
         amountDue: root.querySelector('[data-pos-amount-due]'),
         cart: root.querySelector('[data-pos-cart]'),
+        confirmDetails: root.querySelector('[data-pos-confirm-details]'),
+        confirmModal: root.querySelector('[data-pos-confirm-modal]'),
+        confirmSubmit: root.querySelector('[data-pos-confirm-submit]'),
         category: root.querySelector('[data-pos-category]'),
         change: root.querySelector('[data-pos-change]'),
         checkout: root.querySelector('[data-pos-checkout]'),
@@ -41,6 +44,7 @@ function initializePos(root) {
         selectedPromoIds: new Set(),
         paidTouched: false,
         verifiedMember: null,
+        submittingSale: false,
     };
     const layoutGrid = root.querySelector('[data-pos-layout]');
     const layoutOptions = root.querySelectorAll('[data-pos-layout-option]');
@@ -418,8 +422,154 @@ function initializePos(root) {
         renderSummary();
     });
 
-    elements.checkout.addEventListener('click', async () => {
-        if (state.cart.size === 0 || !elements.outlet.value) {
+    const buildConfirmationHtml = () => {
+        const lines = Array.from(state.cart.values());
+        const subtotal = subtotalValue();
+        const discount = estimateDiscount();
+        const total = Math.max(0, subtotal - discount);
+        const pointsToRedeem = Number(elements.pointsToRedeem.value || 0);
+        const amountDue = Math.max(0, total - pointsToRedeem);
+        const paid = Number(elements.paid.value || 0);
+        const paymentMethod = root.querySelector('[data-pos-payment-method]')?.value || 'cash';
+        const methodLabels = { cash: 'Tunai', debit: 'Kartu debit', bank_transfer: 'Transfer bank', ewallet: 'E-wallet' };
+        const cashierName = getSession()?.user?.name || 'Kasir';
+        const outletName = elements.outlet.selectedOptions?.[0]?.textContent?.trim() || 'Toko';
+        const memberName = state.verifiedMember?.name || (elements.memberPhone.value.trim() ? 'Nomor belum terverifikasi' : 'Tanpa member');
+        const couponCode = elements.couponCode.value.trim();
+        const cashChange = Math.max(0, paid - amountDue);
+        const pointsToMember = Number(elements.pointsToMember.value || 0);
+        const appliedPromoIds = Array.from(state.selectedPromoIds);
+        const appliedPromoNames = appliedPromoIds.map((id) => state.promos.find((promo) => Number(promo.id) === Number(id))?.name).filter(Boolean);
+
+        return `
+            <div class="space-y-4">
+                <div class="rounded-2xl border border-[#e7ebff] bg-[#f7f9ff] p-4">
+                    <dl class="grid gap-2 text-xs sm:grid-cols-2">
+                        <div><dt class="text-[#7b8299]">Toko</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(outletName)}</dd></div>
+                        <div><dt class="text-[#7b8299]">Kasir</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(cashierName)}</dd></div>
+                        <div><dt class="text-[#7b8299]">Member</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(memberName)}</dd></div>
+                        <div><dt class="text-[#7b8299]">Metode bayar</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(methodLabels[paymentMethod] || paymentMethod)}</dd></div>
+                    </dl>
+                </div>
+
+                <div class="overflow-hidden rounded-2xl border border-[#e7ebff]">
+                    <table class="min-w-full text-xs">
+                        <thead class="border-b border-[#e7ebff] bg-[#f7f9ff] text-[#5e647f]">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold">Produk</th>
+                                <th class="px-3 py-2 text-right font-semibold">Qty</th>
+                                <th class="px-3 py-2 text-right font-semibold">Harga</th>
+                                <th class="px-3 py-2 text-right font-semibold">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#eef3ff]">
+                            ${lines.map((line) => `
+                                <tr>
+                                    <td class="px-3 py-2 font-medium text-[#1f2544]">${escapeHtml(line.product.name)}</td>
+                                    <td class="px-3 py-2 text-right text-[#5e647f]">${line.quantity}</td>
+                                    <td class="px-3 py-2 text-right text-[#5e647f]">${formatRupiah(line.product.selling_price)}</td>
+                                    <td class="px-3 py-2 text-right font-semibold text-[#1f2544]">${formatRupiah(Number(line.product.selling_price) * line.quantity)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <dl class="space-y-2 rounded-2xl border border-[#e7ebff] p-4 text-sm">
+                    <div class="flex justify-between text-[#5e647f]"><dt>Subtotal</dt><dd class="font-medium text-[#1f2544]">${formatRupiah(subtotal)}</dd></div>
+                    <div class="flex justify-between text-[#5e647f]"><dt>Estimasi diskon</dt><dd class="font-medium text-emerald-700">−${formatRupiah(discount)}</dd></div>
+                    <div class="flex justify-between border-t border-[#eef3ff] pt-2 text-base font-semibold"><dt>Total</dt><dd>${formatRupiah(total)}</dd></div>
+                    <div class="flex justify-between text-[#5e647f]"><dt>Poin pembayaran</dt><dd class="font-medium text-[#1f2544]">${pointsToRedeem.toLocaleString('id-ID')}</dd></div>
+                    <div class="flex justify-between text-[#5e647f]"><dt>Sisa bayar</dt><dd class="font-medium text-[#1f2544]">${formatRupiah(amountDue)}</dd></div>
+                    <div class="flex justify-between text-[#5e647f]"><dt>Dibayar</dt><dd class="font-medium text-[#1f2544]">${formatRupiah(paid)}</dd></div>
+                    <div class="flex justify-between text-[#5e647f]"><dt>Kembalian</dt><dd class="font-medium text-[#1f2544]">${formatRupiah(cashChange - pointsToMember)} tunai${pointsToMember > 0 ? ` + ${pointsToMember.toLocaleString('id-ID')} poin` : ''}</dd></div>
+                    ${couponCode ? `<div class="flex justify-between text-[#5e647f]"><dt>Kupon</dt><dd class="font-medium text-[#1f2544]">${escapeHtml(couponCode)}</dd></div>` : ''}
+                    ${appliedPromoNames.length ? `<div class="flex justify-between text-[#5e647f]"><dt>Promo</dt><dd class="font-medium text-[#1f2544]">${escapeHtml(appliedPromoNames.join(', '))}</dd></div>` : ''}
+                </dl>
+            </div>
+        `;
+    };
+
+    const openConfirmModal = () => {
+        elements.confirmDetails.innerHTML = buildConfirmationHtml();
+        elements.confirmModal.classList.remove('hidden');
+        elements.confirmModal.classList.add('flex');
+    };
+
+    const closeConfirmModal = () => {
+        elements.confirmModal.classList.add('hidden');
+        elements.confirmModal.classList.remove('flex');
+    };
+
+    const renderReceiptCard = (sale, payload) => {
+        const outletName = elements.outlet.selectedOptions?.[0]?.textContent?.trim() || 'Toko';
+        const cashierName = getSession()?.user?.name || 'Kasir';
+        const transactionDate = sale.transaction_date ? new Date(sale.transaction_date).toLocaleString('id-ID') : new Date().toLocaleString('id-ID');
+        const appliedPromos = (sale.sale_promos || []).map((salePromo) => {
+            const promo = state.promos.find((item) => Number(item.id) === Number(salePromo.promo_id));
+            return promo?.name || salePromo?.promo?.name;
+        }).filter(Boolean);
+        const customerName = sale.customer?.name || state.verifiedMember?.name || '-';
+        const paymentLabels = { cash: 'Tunai', debit: 'Kartu debit', bank_transfer: 'Transfer bank', ewallet: 'E-wallet' };
+        const items = sale.items || [];
+
+        return `
+            <div class="space-y-4">
+                <div class="text-center">
+                    <p class="text-lg font-bold text-[#1f2544]">${escapeHtml(outletName)}</p>
+                    <p class="text-xs uppercase tracking-[0.2em] text-[#8a91a9]">Struk pembayaran</p>
+                </div>
+                <dl class="grid gap-2 rounded-2xl border border-[#e7ebff] bg-[#f7f9ff] p-4 text-xs">
+                    <div class="flex justify-between gap-4"><dt class="text-[#7b8299]">Invoice</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(sale.invoice_number)}</dd></div>
+                    <div class="flex justify-between gap-4"><dt class="text-[#7b8299]">Tanggal</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(transactionDate)}</dd></div>
+                    <div class="flex justify-between gap-4"><dt class="text-[#7b8299]">Kasir</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(cashierName)}</dd></div>
+                    <div class="flex justify-between gap-4"><dt class="text-[#7b8299]">Pelanggan</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(customerName)}</dd></div>
+                    <div class="flex justify-between gap-4"><dt class="text-[#7b8299]">Pembayaran</dt><dd class="font-semibold text-[#1f2544]">${escapeHtml(paymentLabels[payload.payment_method] || payload.payment_method)}</dd></div>
+                </dl>
+
+                <div class="overflow-hidden rounded-2xl border border-[#e7ebff]">
+                    <table class="min-w-full text-xs">
+                        <thead class="border-b border-[#e7ebff] bg-[#f7f9ff] text-[#5e647f]">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold">Produk</th>
+                                <th class="px-3 py-2 text-right font-semibold">Qty</th>
+                                <th class="px-3 py-2 text-right font-semibold">Harga</th>
+                                <th class="px-3 py-2 text-right font-semibold">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#eef3ff]">
+                            ${items.map((item) => `
+                                <tr>
+                                    <td class="px-3 py-2 font-medium text-[#1f2544]">${escapeHtml(item.product?.name || `Produk #${item.product_id}`)}</td>
+                                    <td class="px-3 py-2 text-right text-[#5e647f]">${item.quantity}</td>
+                                    <td class="px-3 py-2 text-right text-[#5e647f]">${formatRupiah(item.price)}</td>
+                                    <td class="px-3 py-2 text-right font-semibold text-[#1f2544]">${formatRupiah(item.subtotal)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <dl class="space-y-2 rounded-2xl border border-[#e7ebff] p-4 text-sm">
+                    <div class="flex justify-between text-[#5e647f]"><dt>Subtotal</dt><dd class="font-medium text-[#1f2544]">${formatRupiah(sale.subtotal)}</dd></div>
+                    <div class="flex justify-between text-[#5e647f]"><dt>Diskon</dt><dd class="font-medium text-emerald-700">−${formatRupiah(sale.discount)}</dd></div>
+                    <div class="flex justify-between border-t border-[#eef3ff] pt-2 text-base font-semibold"><dt>Total</dt><dd>${formatRupiah(sale.total)}</dd></div>
+                    ${Number(sale.points_redeemed) > 0 ? `<div class="flex justify-between text-[#5e647f]"><dt>Poin digunakan</dt><dd class="font-medium text-[#1f2544]">${Number(sale.points_redeemed).toLocaleString('id-ID')}</dd></div>` : ''}
+                    ${Number(sale.points_to_member) > 0 ? `<div class="flex justify-between text-[#5e647f]"><dt>Poin kembalian</dt><dd class="font-medium text-[#1f2544]">${Number(sale.points_to_member).toLocaleString('id-ID')}</dd></div>` : ''}
+                    <div class="flex justify-between text-[#5e647f]"><dt>Dibayar</dt><dd class="font-medium text-[#1f2544]">${formatRupiah(sale.paid)}</dd></div>
+                    <div class="flex justify-between text-[#5e647f]"><dt>Kembalian tunai</dt><dd class="font-medium text-[#1f2544]">${formatRupiah(sale.change)}</dd></div>
+                    ${payload.coupon_code ? `<div class="flex justify-between text-[#5e647f]"><dt>Kupon</dt><dd class="font-medium text-[#1f2544]">${escapeHtml(payload.coupon_code)}</dd></div>` : ''}
+                    ${appliedPromos.length ? `<div class="flex justify-between text-[#5e647f]"><dt>Promo diterapkan</dt><dd class="font-medium text-[#1f2544]">${escapeHtml(appliedPromos.join(', '))}</dd></div>` : ''}
+                </dl>
+
+                <p class="text-center text-xs text-[#7b8299]">Terima kasih atas kunjungan Anda.</p>
+                <button type="button" data-pos-print class="no-print min-h-11 w-full rounded-xl border border-[#e7ebff] bg-white px-4 text-sm font-semibold text-[#5e647f] transition hover:bg-[#f7f9ff]">Cetak struk</button>
+            </div>
+        `;
+    };
+
+    const submitSale = async () => {
+        if (state.submittingSale || state.cart.size === 0 || !elements.outlet.value) {
             return;
         }
 
@@ -444,20 +594,20 @@ function initializePos(root) {
             showMessage('Verifikasi nomor member terlebih dahulu sebelum menggunakan poin pembayaran.');
             return;
         }
-        const button = elements.checkout;
-        button.disabled = true;
-        button.textContent = 'Menyimpan transaksi…';
+
+        state.submittingSale = true;
+        const submitButton = elements.confirmSubmit;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Menyimpan transaksi…';
+        elements.checkout.disabled = true;
 
         try {
             const response = await apiRequest('/sales', { method: 'POST', body: JSON.stringify(payload) });
             const sale = response.data;
-            const appliedPromos = (sale.sale_promos || []).map((salePromo) => {
-                const promo = state.promos.find((item) => Number(item.id) === Number(salePromo.promo_id));
-                return promo?.name;
-            }).filter(Boolean);
-            elements.receipt.innerHTML = `<p class="font-semibold">Transaksi tersimpan · ${escapeHtml(sale.invoice_number)}</p><p class="mt-1">Subtotal ${formatRupiah(sale.subtotal)} · Diskon ${formatRupiah(sale.discount)} · Total ${formatRupiah(sale.total)}${Number(sale.points_redeemed) > 0 ? ` · ${Number(sale.points_redeemed).toLocaleString('id-ID')} poin digunakan` : ''} · Kembalian tunai ${formatRupiah(sale.change)}${Number(sale.points_to_member) > 0 ? ` · ${Number(sale.points_to_member).toLocaleString('id-ID')} poin terkirim` : ''}</p><p class="mt-1">Promo diterapkan: ${appliedPromos.length ? appliedPromos.map(escapeHtml).join(', ') : payload.coupon_code ? `Kode ${escapeHtml(payload.coupon_code)}` : 'Tidak ada'}</p>`;
+            elements.receipt.innerHTML = renderReceiptCard(sale, payload);
             elements.receipt.classList.remove('hidden');
             elements.alert.classList.add('hidden');
+            closeConfirmModal();
             state.cart.clear();
             state.selectedPromoIds.clear();
             state.paidTouched = false;
@@ -473,9 +623,38 @@ function initializePos(root) {
         } catch (error) {
             showMessage(apiMessage(error));
         } finally {
-            button.disabled = false;
-            button.textContent = 'Simpan transaksi';
+            state.submittingSale = false;
+            submitButton.disabled = false;
+            submitButton.textContent = 'Yakin, simpan transaksi';
+            elements.checkout.disabled = state.cart.size === 0 || !elements.outlet.value;
             renderCart();
+        }
+    };
+
+    elements.checkout.addEventListener('click', () => {
+        if (state.cart.size === 0 || !elements.outlet.value) {
+            return;
+        }
+
+        // Basic payment validation is also enforced by disabled button, but re-check here.
+        openConfirmModal();
+    });
+
+    elements.confirmSubmit.addEventListener('click', () => {
+        submitSale();
+    });
+
+    elements.confirmModal.addEventListener('click', (event) => {
+        const cancelButton = event.target.closest('[data-pos-confirm-cancel]');
+        if (cancelButton || event.target === elements.confirmModal) {
+            closeConfirmModal();
+        }
+    });
+
+    elements.receipt.addEventListener('click', (event) => {
+        const printButton = event.target.closest('[data-pos-print]');
+        if (printButton) {
+            window.print();
         }
     });
 
