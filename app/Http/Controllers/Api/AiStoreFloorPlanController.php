@@ -63,8 +63,12 @@ class AiStoreFloorPlanController extends ApiController
         $length = (float) $data['room_length_m'];
         $width = (float) $data['room_width_m'];
         $door = (array) ($data['door'] ?? []);
+        $doorWidth = (float) ($door['width'] ?? 0);
+        $doorHeight = (float) ($door['height'] ?? 0);
 
-        if ((float) ($door['x'] ?? 0) > $length || (float) ($door['y'] ?? 0) > $width) {
+        if ((float) ($door['x'] ?? 0) > $length || (float) ($door['y'] ?? 0) > $width
+            || ($doorWidth > 0 && (float) ($door['x'] + $doorWidth) > $length + 0.001)
+            || ($doorHeight > 0 && (float) ($door['y'] + $doorHeight) > $width + 0.001)) {
             throw ValidationException::withMessages([
                 'door' => ['Posisi pintu masuk berada di luar batas ruangan.'],
             ]);

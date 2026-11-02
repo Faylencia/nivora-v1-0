@@ -102,7 +102,7 @@ final class AiStoreLayoutService
                     });
 
                 if ($overlapsDoor) {
-                    $errors[] = 'Objek denah tidak boleh menutupi pintu masuk.';
+                    $errors[] = 'Objek denah '.(string) ($object['name'] ?? $object['id'] ?? 'Denah').' tidak boleh menutupi pintu masuk.';
                 }
             }
         }
@@ -130,7 +130,7 @@ final class AiStoreLayoutService
                     && $secondX < $firstX + $firstWidth - 0.001
                     && $firstY < $secondY + $secondHeight - 0.001
                     && $secondY < $firstY + $firstHeight - 0.001) {
-                    $errors[] = 'Objek denah '.(string) ($first['name'] ?? $first['id']).' bertabrakan dengan objek '.(string) ($second['name'] ?? $second['id']).'.';
+                    $errors[] = 'Objek denah '.(string) ($first['name'] ?? $first['id']).' (x: '.round((float) $firstX, 2).', y: '.round((float) $firstY, 2).') bertabrakan dengan objek '.(string) ($second['name'] ?? $second['id']).' (x: '.round((float) $secondX, 2).', y: '.round((float) $secondY, 2).').';
                 }
             }
         }

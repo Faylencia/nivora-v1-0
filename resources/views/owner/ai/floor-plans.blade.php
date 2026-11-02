@@ -41,12 +41,14 @@
                     <input data-floor-plan-door-height type="number" min="1" max="4" step="0.1" class="mt-2 min-h-11 w-full rounded-xl border border-[#e7ebff] bg-white px-3 text-sm outline-none focus:border-[#687EFF] focus:ring-4 focus:ring-[#687EFF]/15" />
                 </label>
                 <label class="space-y-1 text-sm font-semibold text-[#1f2544] sm:col-span-2">
-                    Posisi jendela (baris: x,y,lebar,tinggi)
-                    <textarea data-floor-plan-windows rows="2" placeholder="2,0.5,1.2,1.2" class="mt-2 min-h-24 w-full rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm outline-none focus:border-[#687EFF] focus:ring-4 focus:ring-[#687EFF]/15"></textarea>
+                    Posisi jendela (baris: x,y,lebar,tinggi, semua dalam meter)
+                    <textarea data-floor-plan-windows rows="2" placeholder="2,0,1.2,1.2" class="mt-2 min-h-24 w-full rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm outline-none focus:border-[#687EFF] focus:ring-4 focus:ring-[#687EFF]/15"></textarea>
+                    <p class="text-xs font-normal text-[#7b8299]">Format: x,y,lebar,tinggi. Contoh: 2,0,1.2,1.2 (posisi x=2 meter, y=0 meter, lebar=1.2 m, tinggi=1.2 m).</p>
                 </label>
                 <label class="space-y-1 text-sm font-semibold text-[#1f2544] sm:col-span-2">
-                    Area permanen (baris: jenis,x,y,lebar,tinggi)
+                    Area permanen (baris: jenis,x,y,lebar,tinggi, semua dalam meter)
                     <textarea data-floor-plan-permanent-areas rows="2" placeholder="storage,3,2,2,2&#10;gudang,4,3,1.5,1.5" class="mt-2 min-h-24 w-full rounded-xl border border-[#e7ebff] bg-white px-3 py-2 text-sm outline-none focus:border-[#687EFF] focus:ring-4 focus:ring-[#687EFF]/15"></textarea>
+                    <p class="text-xs font-normal text-[#7b8299]">Format: jenis,x,y,lebar,tinggi. Contoh: storage,3,2,2,2 (area penyimpanan mulai x=3 m, y=2 m, lebar=2 m, tinggi=2 m).</p>
                 </label>
                 <div class="flex items-end sm:col-span-2">
                     <button type="submit" data-floor-plan-generate class="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#687EFF] px-5 text-sm font-semibold text-white transition hover:bg-[#596eea]">Generate Denah</button>
@@ -82,6 +84,17 @@
                     <svg data-floor-plan-svg class="h-[420px] w-full" viewBox="0 0 0 0" role="img" aria-label="Denah 2D toko">
                         <rect x="0" y="0" width="10" height="10" fill="transparent"></rect>
                     </svg>
+                </div>
+                <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <span class="text-xs font-semibold text-[#5e647f]">Legenda:</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#687EFF"></span>Rak Dinding</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#98E4FF"></span>Rak Tengah</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#1F2544"></span>Meja Kasir</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#F59E0B"></span>Pintu Masuk</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#38BDF8"></span>Jendela</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#64748B"></span>Gudang</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#B6FFFA"></span>Area Penyimpanan</span>
+                    <span class="inline-flex items-center gap-2 text-xs font-semibold text-[#1f2544]"><span class="h-3 w-3 rounded-full" style="background-color:#D7E4FF"></span>Lorong Pelanggan</span>
                 </div>
             </section>
         </div>

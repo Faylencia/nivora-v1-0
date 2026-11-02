@@ -214,6 +214,20 @@ function initializeFloorPlan(root) {
             return;
         }
 
+        for (const window of input.windows || []) {
+            if (window.x + window.width > input.room_length_m || window.y + window.height > input.room_width_m) {
+                setMessage(`Posisi jendela (x: ${window.x}, y: ${window.y}) berada di luar batas ruangan.`);
+                return;
+            }
+        }
+
+        for (const area of input.permanent_areas || []) {
+            if (area.x + area.width > input.room_length_m || area.y + area.height > input.room_width_m) {
+                setMessage(`Posisi area permanen (${area.type}) berada di luar batas ruangan.`);
+                return;
+            }
+        }
+
         elements.generateButton.disabled = true;
         elements.generateButton.textContent = 'Memproses…';
 
