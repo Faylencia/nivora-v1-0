@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Resources\AiStoreFloorPlanResource;
 use App\Models\AiStoreFloorPlan;
 use App\Services\AiStoreLayoutService;
+use App\Services\BusinessContext;
+use App\Services\PlatformActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -13,7 +15,11 @@ class AiStoreFloorPlanController extends ApiController
 {
     public function __construct(
         protected readonly AiStoreLayoutService $layout,
-    ) {}
+        protected readonly BusinessContext $businessContext,
+        protected readonly PlatformActivityLogger $activityLogger,
+    ) {
+        parent::__construct($businessContext, $activityLogger);
+    }
 
     public function index(Request $request): JsonResponse
     {
