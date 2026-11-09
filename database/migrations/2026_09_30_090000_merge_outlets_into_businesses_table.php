@@ -26,7 +26,9 @@ return new class extends Migration
         }
 
         foreach (['user_roles', 'inventories', 'sales', 'ai_recommendations', 'store_analyses'] as $tableName) {
-            if (Schema::hasColumn($tableName, 'outlet_id')) {
+            // SQLite does not support dropping foreign keys by name; the following
+            // migration drops these columns anyway.
+            if (Schema::hasColumn($tableName, 'outlet_id') && DB::getDriverName() !== 'sqlite') {
                 Schema::table($tableName, function (Blueprint $table) use ($tableName): void {
                     $table->dropForeign($tableName.'_outlet_id_foreign');
                 });

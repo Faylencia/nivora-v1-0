@@ -35,4 +35,25 @@ return [
         ],
     ],
 
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'base_url' => rtrim((string) env('OPENAI_BASE_URL', 'https://api.openai.com/v1'), '/'),
+        'vision_model' => env('OPENAI_VISION_MODEL', 'gpt-4o'),
+        'image_model' => env('OPENAI_IMAGE_MODEL', 'gpt-image-1.5'),
+        'image_quality' => env('OPENAI_IMAGE_QUALITY', 'medium'),
+        'image_size' => env('OPENAI_IMAGE_SIZE', 'auto'),
+        'timeout' => (int) env('OPENAI_TIMEOUT', 180),
+    ],
+
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'gemini'),
+    ],
+
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'base_url' => rtrim((string) env('GEMINI_API_BASE', 'https://generativelanguage.googleapis.com/v1beta'), '/'),
+        'vision_model' => env('GEMINI_VISION_MODEL', 'gemini-3.6-flash'),
+        'timeout' => (int) env('GEMINI_TIMEOUT', 180),
+    ],
+
 ];

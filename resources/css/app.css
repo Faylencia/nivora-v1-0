@@ -1269,10 +1269,14 @@ html[data-theme='dark'] .owner-settings .owner-settings-link:hover {
 }
 
 .floor-plan-object-label {
-    font-size: 1.5;
     font-weight: 600;
     fill: #1f2544;
     pointer-events: none;
+}
+
+.floor-plan-object-estimated {
+    stroke-dasharray: 0.18 0.12;
+    fill-opacity: 0.55;
 }
 
 .floor-plan-object-chip {

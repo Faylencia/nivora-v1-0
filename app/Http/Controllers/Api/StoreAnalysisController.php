@@ -26,7 +26,6 @@ class StoreAnalysisController extends ApiController
 
         $analysis = StoreAnalysis::create([
             'business_id' => $business->id,
-            'business_id' => $business->id,
             'user_id' => $request->user()->id,
             'image_url' => Storage::disk('public')->url($path),
             'overall_score' => null,

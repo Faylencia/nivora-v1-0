@@ -21,9 +21,19 @@ return new class extends Migration
         });
 
         Schema::table('user_roles', function (Blueprint $table): void {
+            // The original FK keeps its default name; drop it before re-adding the
+            // nullable version to avoid a duplicate constraint name on MySQL.
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign(['business_id']);
+            }
+
             $table->foreignId('business_id')->nullable()->change();
             $table->unique(['user_id', 'role_id', 'business_id', 'outlet_id'], 'user_roles_unique_scope');
-            $table->foreign('business_id')->references('id')->on('businesses')->cascadeOnDelete();
+
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->foreign('business_id')->references('id')->on('businesses')->cascadeOnDelete()->name('user_roles_business_id_foreign');
+            }
+
             $table->dropIndex('user_roles_nullable_scope_support');
         });
 

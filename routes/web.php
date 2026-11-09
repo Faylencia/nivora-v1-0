@@ -169,7 +169,7 @@ Route::prefix('owner')->name('owner.')->group(function () {
     })->name('ai.index');
 
     Route::get('/ai/store-analysis', function () {
-        return view('owner.ai.store-analysis');
+        return redirect()->route('owner.ai.floor-plans');
     })->name('ai.store-analysis');
 
     Route::get('/ai/floor-plans', function () {

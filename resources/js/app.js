@@ -5,7 +5,7 @@ import { bootProducts } from './products';
 import { bootPromotions } from './promotions';
 import { bootCashierPromos } from './cashier-promos';
 import { bootMemberPages } from './member';
-import { bootFloorPlans } from './floor-plans';
+import { bootStoreAdvisor } from './store-advisor';
 import { guardDashboardRole } from './nivora-api';
 
 function initializeThemePreference() {
@@ -334,5 +334,5 @@ document.addEventListener('DOMContentLoaded', () => {
     bootCashierPromos();
     bootPos();
     bootMemberPages();
-    bootFloorPlans();
+    bootStoreAdvisor();
 });

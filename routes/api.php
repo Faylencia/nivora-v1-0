@@ -54,12 +54,15 @@ Route::prefix('v1')->group(function (): void {
             Route::get('customers', [CustomerController::class, 'index']);
             Route::get('customers/{customer}', [CustomerController::class, 'show']);
             Route::post('sales/{sale}/return', [SaleController::class, 'return']);
-            Route::post('ai/recommendations/generate', [AiRecommendationController::class, 'generate']);
+            Route::post('ai/recommendations/generate', [AiRecommendationController::class, 'generate'])->middleware('throttle:ai');
             Route::post('ai/recommendations/{recommendation}/execute', [AiRecommendationController::class, 'execute']);
             Route::get('ai/recommendations', [AiRecommendationController::class, 'index']);
-            Route::post('ai/store-analysis', [StoreAnalysisController::class, 'store']);
+            Route::post('ai/store-analysis', [StoreAnalysisController::class, 'store'])->middleware('throttle:ai');
             Route::get('ai/store-analysis/{analysis}', [StoreAnalysisController::class, 'show']);
-            Route::apiResource('ai/floor-plans', AiStoreFloorPlanController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+            Route::apiResource('ai/floor-plans', AiStoreFloorPlanController::class)->only(['index', 'show', 'update', 'destroy']);
+            Route::post('ai/floor-plans', [AiStoreFloorPlanController::class, 'store'])->middleware('throttle:ai');
+            Route::post('ai/floor-plans/{floorPlan}/regenerate', [AiStoreFloorPlanController::class, 'regenerate'])->middleware('throttle:ai');
+            Route::post('ai/floor-plans/{floorPlan}/relayout', [AiStoreFloorPlanController::class, 'relayout']);
         });
 
         Route::middleware('role:owner,cashier')->group(function (): void {
